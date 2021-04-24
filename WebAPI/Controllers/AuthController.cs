@@ -37,6 +37,24 @@ namespace WebAPI.Controllers
             return BadRequest(result.Message);
         }
 
+        [HttpPost("mailauth")]
+        public ActionResult MailAuth(UserMailAuthDto userMailAuthDto)
+        {
+            var userExists = _authService.UserExists(userMailAuthDto.Email);
+            if (!userExists.Success)
+            {
+                return BadRequest(userExists.Message);
+            }
+
+            var registerResult = _authService.MailConfirmation(userMailAuthDto);
+            if (registerResult.Success)
+            {
+                return Ok(registerResult.Data);
+            }
+
+            return BadRequest(registerResult.Message);
+        }
+
         [HttpPost("register")]
         public ActionResult Register(UserForRegisterDto userForRegisterDto)
         {
