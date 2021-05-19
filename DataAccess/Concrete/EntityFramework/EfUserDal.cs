@@ -11,8 +11,11 @@ using Remotion.Linq.Parsing.Structure.IntermediateModel;
 
 namespace DataAccess.Concrete.EntityFramework
 {
-    public class EfUserDal:EfEntityRepositoryBase<User,EGonulluContext>,IUserDal
+    public class EfUserDal:EfEntityRepositoryBase<User>,IUserDal
     {
+        public EfUserDal(EGonulluContext context)
+         : base(context)
+        { }
         public List<OperationClaim> GetClaims(User user)
         {
             using (var context = new EGonulluContext())

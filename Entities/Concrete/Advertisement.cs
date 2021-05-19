@@ -14,7 +14,10 @@ namespace Entities.Concrete
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
         public int OrganisationId { get; set; }
+        public bool IsOnline { get; set; }
 
+        public ICollection<AdvertisementCategory> AdvertisementCategorys { get; set; }
+        public ICollection<AdvertisementPurpose> AdvertisementPurposes { get; set; }
         public ICollection<AdvertisementVolunteer> AdvertisementVolunteers { get; set; }
         public Organisation Organisation { get; set; }
     }

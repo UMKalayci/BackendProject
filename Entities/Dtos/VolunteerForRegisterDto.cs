@@ -12,13 +12,13 @@ namespace Entities.Dtos
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public DateTime BirthDate { get; set; }
+        public string Phone { get; set; }
         public int Gender { get; set; }
         public int? UniversityId { get; set; }
         public string HighSchool { get; set; }
         public int? CompanyId { get; set; }
         public int? CompanyDepartmentId { get; set; }
         public int CityId { get; set; }
-        public string Phone { get; set; }
 
     }
 }

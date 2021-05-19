@@ -14,14 +14,14 @@ namespace WebAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class VolunteersController : ControllerBase
+    public class VolunteerController : ControllerBase
     {
         private IVolunteerService _volunteerService;
         private IAuthService _authService;
 
-        public VolunteersController(IVolunteerService VolunteerService,IAuthService authService)
+        public VolunteerController(IVolunteerService volunteerService,IAuthService authService)
         {
-            _volunteerService = VolunteerService;
+            _volunteerService = volunteerService;
             _authService = authService;
         }
 

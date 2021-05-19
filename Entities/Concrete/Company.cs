@@ -18,6 +18,7 @@ namespace Entities.Concrete
         public byte[] Image { get; set; }
         public string Desc { get; set; }
         public ICollection<CompanyDepartment> CompanyDepartments { get; set; }
+        public ICollection<Volunteer> Volunteers { get; set; }
         public User User { get; set; }
     }
 }

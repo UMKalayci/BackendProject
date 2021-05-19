@@ -27,14 +27,14 @@ using Microsoft.AspNetCore.Http;
 
 namespace Business.Concrete
 {
-    public class VolunteerManager:IVolunteerService
+    public class VolunteerManager : IVolunteerService
     {
         private IUserService _userService;
-        private IVolunteerDal _volunteerDal;
+        private IUnitOfWork _unitOfWork;
 
-        public VolunteerManager(IUserService userService, IVolunteerDal volunteerDal)
+        public VolunteerManager(IUserService userService, IUnitOfWork unitOfWork)
         {
-            _volunteerDal = volunteerDal;
+            _unitOfWork = unitOfWork;
             _userService = userService;
         }
 
@@ -51,30 +51,36 @@ namespace Business.Concrete
                 PasswordSalt = passwordSalt,
                 Status = true
             };
-            try { 
-            _userService.Add(user);
-            int userId = _userService.GetByMail(user.Email).Id;
-
-            var volunter = new Volunteer
+            try
             {
-                UserId=userId,
-                CityId = volunteerForRegisterDto.CityId,
-                BirthDate = volunteerForRegisterDto.BirthDate,
-                CompanyId = volunteerForRegisterDto.CompanyId,
-                Gender = volunteerForRegisterDto.Gender,
-                Phone = volunteerForRegisterDto.Phone,
-                UniversityId = volunteerForRegisterDto.UniversityId,
-                UpdateDate = DateTime.Now,
-                InsertDate = DateTime.Now,
-                Status = true
-            };
+                _userService.Add(user);
+                int userId = _userService.GetByMail(user.Email).Id;
 
-            _volunteerDal.Add(volunter);
+                var volunter = new Volunteer
+                {
+                    UserId = userId,
+                    CityId = volunteerForRegisterDto.CityId,
+                    BirthDate = volunteerForRegisterDto.BirthDate,
+                    CompanyId = volunteerForRegisterDto.CompanyId,
+                    Gender = volunteerForRegisterDto.Gender,
+                    Phone = volunteerForRegisterDto.Phone,
+                    UniversityId = volunteerForRegisterDto.UniversityId,
+                    CompanyDepartmentId=volunteerForRegisterDto.CompanyDepartmentId,
+                    HighSchool=volunteerForRegisterDto.HighSchool,
+                    UpdateDate = DateTime.Now,
+                    InsertDate = DateTime.Now,
+                    Status = true
+                };
 
-            return new SuccessDataResult<Volunteer>(volunter, Messages.UserRegistered);
+                _unitOfWork.Volunteers.Add(volunter);
+
+                _unitOfWork.Commit();
+
+                return new SuccessDataResult<Volunteer>(volunter, Messages.UserRegistered);
             }
             catch
             {
+                _unitOfWork.Dispose();
                 return new ErrorDataResult<Volunteer>(Messages.VolunteerAddError);
             }
         }

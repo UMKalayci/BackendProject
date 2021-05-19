@@ -10,6 +10,7 @@ using Core.Utilities.Interceptors;
 using Core.Utilities.Security.Jwt;
 using DataAccess.Abstract;
 using DataAccess.Concrete.EntityFramework;
+using DataAccess.Concrete.EntityFramework.Contexts;
 
 namespace Business.DependencyResolvers.Autofac
 {
@@ -17,9 +18,14 @@ namespace Business.DependencyResolvers.Autofac
     {
         protected override void Load(ContainerBuilder builder)
         {
-            builder.RegisterType<VolunteerManager>().As<IVolunteerService>();
-            builder.RegisterType<EfProuctDal>().As<IVolunteerDal>();
+            builder.RegisterType<UnitOfWork>().As<IUnitOfWork>();
+            builder.RegisterType<EGonulluContext>().As<EGonulluContext>().SingleInstance();
 
+            builder.RegisterType<VolunteerManager>().As<IVolunteerService>();
+            builder.RegisterType<EfVolunteerDal>().As<IVolunteerDal>();
+
+            builder.RegisterType<AdvertisementManager>().As<IAdvertisementService>();
+            builder.RegisterType<EfAdvertisementDal>().As<IAdvertisementDal>();
 
             builder.RegisterType<UserManager>().As<IUserService>();
             builder.RegisterType<EfUserDal>().As<IUserDal>();

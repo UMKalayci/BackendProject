@@ -30,6 +30,56 @@ namespace DataAccess.Concrete.EntityFramework.Contexts
             modelBuilder.Entity<UserOperationClaim>()
                 .HasKey(x => new { x.UserId, x.OperationClaimId });
 
+            modelBuilder.Entity<Category>()
+                .HasKey(x => x.CategoryId);
+
+            modelBuilder.Entity<GlobalPurpose>()
+                .HasKey(x => x.PurposeId);
+
+            modelBuilder.Entity<Volunteer>()
+                .HasOne(x => x.Company)
+                .WithMany(x => x.Volunteers)
+                .HasForeignKey(x=>x.CompanyId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<AdvertisementCategory>()
+            .HasKey(x => new { x.CategoryId, x.AdvertisementId });
+            modelBuilder.Entity<AdvertisementCategory>()
+                .HasOne(x => x.Advertisement)
+                .WithMany(m => m.AdvertisementCategorys)
+                .HasForeignKey(x => x.AdvertisementId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+
+            modelBuilder.Entity<AdvertisementCategory>()
+                .HasOne(x => x.Category)
+                .WithMany(m => m.AdvertisementCategorys)
+                .HasForeignKey(x => x.CategoryId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+
+            modelBuilder.Entity<AdvertisementPurpose>()
+                .HasOne(x => x.Advertisement)
+                .WithMany(m => m.AdvertisementPurposes)
+                .HasForeignKey(x => x.AdvertisementId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+
+            modelBuilder.Entity<AdvertisementPurpose>()
+            .HasKey(x => new { x.PurposeId, x.AdvertisementId });
+            modelBuilder.Entity<AdvertisementPurpose>()
+                .HasOne(x => x.Purpose)
+                .WithMany(m => m.AdvertisementPurposes)
+                .HasForeignKey(x => x.PurposeId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<UserOperationClaim>()
+                .HasOne(x => x.OperationClaim)
+                .WithMany(m => m.UserOperationClaims)
+                .HasForeignKey(x => x.OperationClaimId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+
             modelBuilder.Entity<UserOperationClaim>()
              .HasOne(x => x.User)
              .WithMany(m => m.UserOperationClaims)
