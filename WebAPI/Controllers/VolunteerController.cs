@@ -43,5 +43,17 @@ namespace WebAPI.Controllers
 
             return BadRequest(result.Message);
         }
+
+        [HttpPost("AddAdvertisement")]
+        public ActionResult AddAdvertisement(AdvertisementVolunteerDto advertisementVolunteerDto)
+        {
+            var result = _volunteerService.AddAdvertisement(advertisementVolunteerDto);
+            if (!result.Success)
+            {
+                return BadRequest(result.Message);
+            }
+            return BadRequest(result.Message);
+        }
+
     }
 }

@@ -19,17 +19,17 @@ namespace Business.Concrete
 
         public List<OperationClaim> GetClaims(User user)
         {
-            return _unitOfWork.Users.GetClaims(user);
+            return _unitOfWork.UserDal.GetClaims(user);
         }
 
         public void Add(User user)
         {
-            _unitOfWork.Users.Add(user);
+            _unitOfWork.UserDal.Add(user);
         }
 
         public User GetByMail(string email)
         {
-            return _unitOfWork.Users.Get(u => u.Email == email);
+            return _unitOfWork.UserDal.Get(u => u.Email == email);
         }
     }
 }

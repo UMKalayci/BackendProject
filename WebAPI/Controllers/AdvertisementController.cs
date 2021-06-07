@@ -34,5 +34,17 @@ namespace WebAPI.Controllers
 
             return BadRequest(result.Message);
         }
+
+        [HttpGet("AddAdvertisement")]
+        public ActionResult AddAdvertisement([FromQuery] AdvertisementDto advertisementDto)
+        {
+            var result = _adversimentService.Add(advertisementDto);
+            if (result.Success)
+            {
+                return Ok(result.Data);
+            }
+
+            return BadRequest(result.Message);
+        }
     }
 }

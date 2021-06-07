@@ -12,5 +12,6 @@ namespace Business.Abstract
     public interface IAdvertisementService
     {
         IPaginationResult<List<AdvertisementListView>> GetList(AdvertisementQuery adversimentQuery, PaginationQuery paginationQuery = null);
+        IDataResult<int> Add(AdvertisementDto advertisementDto);
     }
 }

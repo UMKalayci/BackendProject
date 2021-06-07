@@ -18,6 +18,10 @@
         public static string UserRegistered = "Kullanıcı başarıyla kaydedildi";
         public static string AccessTokenCreated="Access token başarıyla oluşturuldu";
 
+        public static string MissingFieldError = "Lütfen tüm alanları eksiksiz doldurunuz.";
+        public static string SuccessAdded = "Ekleme işlemi başarılı.";
+        public static string ErrorAdded = "Ekleme işlemi hatalı.";
+
         public static string AuthorizationDenied = "Yetkiniz yok";
     }
 }

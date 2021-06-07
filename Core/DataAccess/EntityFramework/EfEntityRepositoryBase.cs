@@ -22,6 +22,11 @@ namespace Core.DataAccess.EntityFramework
             var addedEntity = context.Entry(entity);
             addedEntity.State = EntityState.Added;
         }
+            public void AddRange(List<TEntity> entity)
+        {
+            var addedEntity = context.Entry(entity);
+            addedEntity.State = EntityState.Added;
+        }
 
         public void Delete(TEntity entity)
         {

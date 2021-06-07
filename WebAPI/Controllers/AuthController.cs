@@ -4,7 +4,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using Business.Abstract;
 using Entities.Dtos;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using WebAPI.Constants;
 
 namespace WebAPI.Controllers
 {
@@ -13,10 +15,12 @@ namespace WebAPI.Controllers
     public class AuthController:Controller
     {
         private IAuthService _authService;
+        private IVolunteerService _volunteerService;
 
-        public AuthController(IAuthService authService)
+        public AuthController(IAuthService authService, IVolunteerService volunteerService)
         {
             _authService = authService;
+            _volunteerService = volunteerService;
         }
 
         [HttpPost("login")]
@@ -31,6 +35,7 @@ namespace WebAPI.Controllers
             var result = _authService.CreateAccessToken(userToLogin.Data);
             if (result.Success)
             {
+                HttpContext.Session.SetInt32(SessionKeys.SessionKeyUserId, userToLogin.Data.Id);
                 return Ok(result.Data);
             }
 

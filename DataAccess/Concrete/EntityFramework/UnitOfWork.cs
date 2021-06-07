@@ -12,16 +12,24 @@ namespace DataAccess.Concrete.EntityFramework
         private EfUserDal _userDal;
         private EfVolunteerDal _vulunteerDal;
         private EfAdvertisementDal _advertisementDal;
+        private EfCategoryDal _categoryDal;
+        private AdvertisementCategoryDal _advertisementCategoryDal;
+        private AdvertisementPurposeDal _advertisementPurposeDal;
+        private AdvertisementVolunteerDal _advertisementVolunteerDal;
 
         public UnitOfWork(EGonulluContext context)
         {
             this._context = context;
         }
 
-        public IUserDal Users => _userDal = _userDal ?? new EfUserDal(_context);
+        public IUserDal UserDal => _userDal = _userDal ?? new EfUserDal(_context);
 
-        public IVolunteerDal Volunteers => _vulunteerDal = _vulunteerDal ?? new EfVolunteerDal(_context);
-        public IAdvertisementDal Advertisements => _advertisementDal = _advertisementDal ?? new EfAdvertisementDal(_context);
+        public IVolunteerDal VolunteerDal => _vulunteerDal = _vulunteerDal ?? new EfVolunteerDal(_context);
+        public IAdvertisementDal AdvertisementDal => _advertisementDal = _advertisementDal ?? new EfAdvertisementDal(_context);
+        public ICategoryDal CategoryDal => _categoryDal = _categoryDal ?? new EfCategoryDal(_context);
+        public IAdvertisementCategoryDal AdvertisementCategoryDal => _advertisementCategoryDal = _advertisementCategoryDal ?? new AdvertisementCategoryDal(_context);
+        public IAdvertisementPurposeDal AdvertisementPurposeDal => _advertisementPurposeDal = _advertisementPurposeDal ?? new AdvertisementPurposeDal(_context);
+        public IAdvertisementVolunteerDal AdvertisementVolunteerDal => _advertisementVolunteerDal = _advertisementVolunteerDal ?? new AdvertisementVolunteerDal(_context);
 
         public int Commit()
         {

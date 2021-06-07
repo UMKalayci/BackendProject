@@ -65,14 +65,14 @@ namespace Business.Concrete
                     Gender = volunteerForRegisterDto.Gender,
                     Phone = volunteerForRegisterDto.Phone,
                     UniversityId = volunteerForRegisterDto.UniversityId,
-                    CompanyDepartmentId=volunteerForRegisterDto.CompanyDepartmentId,
-                    HighSchool=volunteerForRegisterDto.HighSchool,
+                    CompanyDepartmentId = volunteerForRegisterDto.CompanyDepartmentId,
+                    HighSchool = volunteerForRegisterDto.HighSchool,
                     UpdateDate = DateTime.Now,
                     InsertDate = DateTime.Now,
                     Status = true
                 };
 
-                _unitOfWork.Volunteers.Add(volunter);
+                _unitOfWork.VolunteerDal.Add(volunter);
 
                 _unitOfWork.Commit();
 
@@ -84,7 +84,25 @@ namespace Business.Concrete
                 return new ErrorDataResult<Volunteer>(Messages.VolunteerAddError);
             }
         }
-
+        public IResult AddAdvertisement(AdvertisementVolunteerDto advertisementVolunteerDto)
+        {
+            if (advertisementVolunteerDto.AdvertisementId != 0 && advertisementVolunteerDto.VolunteerId != 0)
+            {
+                AdvertisementVolunteer advertisementVolunteer = new AdvertisementVolunteer();
+                advertisementVolunteer.VolunteerId = advertisementVolunteerDto.VolunteerId;
+                advertisementVolunteer.AdvertisementId = advertisementVolunteerDto.AdvertisementId;
+                advertisementVolunteer.UpdateDate = DateTime.Now;
+                advertisementVolunteer.InsertDate = DateTime.Now;
+                advertisementVolunteer.Status = true;
+                _unitOfWork.AdvertisementVolunteerDal.Add(advertisementVolunteer);
+                _unitOfWork.Commit();
+                return new SuccessResult(Messages.SuccessAdded);
+            }
+            else
+            {
+                return new ErrorResult(Messages.ErrorAdded);
+            }
+        }
         public IResult UserExists(string email)
         {
             if (_userService.GetByMail(email) != null)
