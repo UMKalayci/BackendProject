@@ -32,18 +32,21 @@ namespace Business.Concrete
 {
     public class AdvertisementManager : IAdvertisementService
     {
-        private IUnitOfWork _unitOfWork;
         protected readonly IPaginationUriService _uriService;
-
-        public AdvertisementManager(IUnitOfWork unitOfWork, IPaginationUriService uriService)
+        private IAdvertisementDal _advertisementDal;
+        private IAdvertisementCategoryDal _advertisementCategoryDal;
+        private IAdvertisementPurposeDal _advertisementPurposeDal;
+        public AdvertisementManager( IPaginationUriService uriService, IAdvertisementDal advertisementDal, IAdvertisementCategoryDal advertisementCategoryDal, IAdvertisementPurposeDal advertisementPurposeDal)
         {
-            _unitOfWork = unitOfWork;
             _uriService = uriService;
+            _advertisementDal = advertisementDal;
+            _advertisementCategoryDal = advertisementCategoryDal;
+            _advertisementPurposeDal = advertisementPurposeDal;
         }
 
         public IPaginationResult<List<AdvertisementListView>> GetList(AdvertisementQuery adversimentQuery, PaginationQuery paginationQuery = null)
         {
-            var list = _unitOfWork.AdvertisementDal.GetList(adversimentQuery, paginationQuery).ToList();
+            var list = _advertisementDal.GetList(adversimentQuery, paginationQuery).ToList();
             List<AdvertisementListView> resultList = new List<AdvertisementListView>();
             foreach (var item in list)
             {
@@ -60,7 +63,7 @@ namespace Business.Concrete
                 }
                 );
             };
-            int count = _unitOfWork.AdvertisementDal.GetCount(adversimentQuery);
+            int count = _advertisementDal.GetCount(adversimentQuery);
             return PaginationExtensions.CreatePaginationResult<List<AdvertisementListView>>(resultList, true, paginationQuery, count, _uriService);
         }
         public IDataResult<int> Add(AdvertisementDto advertisementDto)
@@ -84,9 +87,9 @@ namespace Business.Concrete
                     advertisement.InsertDate = now;
                     advertisement.UpdateDate = now;
                     advertisement.Status = false;
-                    _unitOfWork.AdvertisementDal.Add(advertisement);
+                    _advertisementDal.Add(advertisement);
 
-                    int advertisementId = _unitOfWork.AdvertisementDal.Get(x => x.InsertDate == now && x.UpdateDate == now && x.AdvertisementTitle == advertisement.AdvertisementTitle).AdvertisementId;
+                    int advertisementId = _advertisementDal.Get(x => x.InsertDate == now && x.UpdateDate == now && x.AdvertisementTitle == advertisement.AdvertisementTitle).AdvertisementId;
 
                     foreach (var item in advertisementDto.CategoryIdList)
                     {
@@ -96,7 +99,7 @@ namespace Business.Concrete
                         advertisementCategory.InsertDate = now;
                         advertisementCategory.UpdateDate = now;
                         advertisementCategory.Status = true;
-                        _unitOfWork.AdvertisementCategoryDal.Add(advertisementCategory);
+                        _advertisementCategoryDal.Add(advertisementCategory);
                     }
 
                     foreach (var item in advertisementDto.PurposeIdList)
@@ -107,16 +110,13 @@ namespace Business.Concrete
                         advertisementPurpose.InsertDate = now;
                         advertisementPurpose.UpdateDate = now;
                         advertisementPurpose.Status = true;
-                        _unitOfWork.AdvertisementPurposeDal.Add(advertisementPurpose);
+                        _advertisementPurposeDal.Add(advertisementPurpose);
                     }
-                    _unitOfWork.Commit();
                     return new SuccessDataResult<int>(advertisementId, Messages.SuccessAdded);
                 }
                 catch
                 {
-                    _unitOfWork.Dispose();
                     return new ErrorDataResult<int>(-1, Messages.ErrorAdded);
-
                 }
             }
             else

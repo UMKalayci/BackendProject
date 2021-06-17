@@ -9,6 +9,7 @@ using Entities.Dtos;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using WebAPI.Constants;
 
 namespace WebAPI.Controllers
 {
@@ -19,7 +20,7 @@ namespace WebAPI.Controllers
         private IVolunteerService _volunteerService;
         private IAuthService _authService;
 
-        public VolunteerController(IVolunteerService volunteerService,IAuthService authService)
+        public VolunteerController(IVolunteerService volunteerService, IAuthService authService)
         {
             _volunteerService = volunteerService;
             _authService = authService;
@@ -35,19 +36,27 @@ namespace WebAPI.Controllers
             }
 
             var registerResult = _volunteerService.Register(volunteerForRegisterDto, volunteerForRegisterDto.Password);
-            var result = _authService.CreateAccessToken(registerResult.Data.User);
-            if (result.Success)
+            if (registerResult.Success)
             {
-                return Ok(result.Data);
+                var result = _authService.CreateAccessToken(registerResult.Data.User);
+
+                if (result.Success)
+                {
+                    HttpContext.Session.SetInt32(SessionKeys.SessionType, 1);
+                    HttpContext.Session.SetInt32(SessionKeys.SessionKeyUserId, registerResult.Data.User.Id);
+                    HttpContext.Session.SetInt32(SessionKeys.SessionKeyVolunteerId, registerResult.Data.VolunteerId);
+                    return Ok(result.Data);
+                }
+                return BadRequest(result.Message);
             }
 
-            return BadRequest(result.Message);
+            return BadRequest(registerResult.Message);
         }
 
-        [HttpPost("AddAdvertisement")]
-        public ActionResult AddAdvertisement(AdvertisementVolunteerDto advertisementVolunteerDto)
+        [HttpPost("EnrollAdvertisement")]
+        public ActionResult EnrollAdvertisement(AdvertisementVolunteerDto advertisementVolunteerDto)
         {
-            var result = _volunteerService.AddAdvertisement(advertisementVolunteerDto);
+            var result = _volunteerService.EnrollAdvertisement(advertisementVolunteerDto);
             if (!result.Success)
             {
                 return BadRequest(result.Message);

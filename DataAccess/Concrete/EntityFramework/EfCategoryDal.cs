@@ -9,11 +9,8 @@ using Entities.Concrete;
 
 namespace DataAccess.Concrete.EntityFramework
 {
-    public class EfCategoryDal : EfEntityRepositoryBase<Category>, ICategoryDal
+    public class EfCategoryDal : EfEntityRepositoryBase<Category, EGonulluContext>, ICategoryDal
     {
-        public EfCategoryDal(EGonulluContext context)
-         : base(context)
-        { }
 
     }
 }

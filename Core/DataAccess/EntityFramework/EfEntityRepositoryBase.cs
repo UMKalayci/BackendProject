@@ -8,51 +8,58 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Core.DataAccess.EntityFramework
 {
-    public class EfEntityRepositoryBase<TEntity> : IEntityRepository<TEntity>
+    public class EfEntityRepositoryBase<TEntity, TContext> : IEntityRepository<TEntity>
     where TEntity : class, IEntity, new()
+    where TContext : DbContext, new()
     {
-        protected readonly DbContext context;
 
-        public EfEntityRepositoryBase(DbContext context)
-        {
-            this.context = context;
-        }
         public void Add(TEntity entity)
         {
-            var addedEntity = context.Entry(entity);
-            addedEntity.State = EntityState.Added;
-        }
-            public void AddRange(List<TEntity> entity)
-        {
-            var addedEntity = context.Entry(entity);
-            addedEntity.State = EntityState.Added;
+            using (var context = new TContext())
+            {
+                var addedEntity = context.Entry(entity);
+                addedEntity.State = EntityState.Added;
+                context.SaveChanges();
+            }
         }
 
         public void Delete(TEntity entity)
         {
-            var deletedEntity = context.Entry(entity);
-            deletedEntity.State = EntityState.Deleted;
-
+            using (var context = new TContext())
+            {
+                var deletedEntity = context.Entry(entity);
+                deletedEntity.State = EntityState.Deleted;
+                context.SaveChanges();
+            }
         }
 
         public TEntity Get(Expression<Func<TEntity, bool>> filter)
         {
-            return context.Set<TEntity>().SingleOrDefault(filter);
+            using (var context = new TContext())
+            {
+                return context.Set<TEntity>().SingleOrDefault(filter);
+            }
         }
 
         public IList<TEntity> GetList(Expression<Func<TEntity, bool>> filter = null)
         {
-
-            return filter == null
-                ? context.Set<TEntity>().ToList()
-                : context.Set<TEntity>().Where(filter).ToList();
+            using (var context = new TContext())
+            {
+                return filter == null
+    ? context.Set<TEntity>().ToList()
+    : context.Set<TEntity>().Where(filter).ToList();
+            }
 
         }
 
         public void Update(TEntity entity)
         {
-            var updatedEntity = context.Entry(entity);
-            updatedEntity.State = EntityState.Modified;
+            using (var context = new TContext())
+            {
+                var updatedEntity = context.Entry(entity);
+                updatedEntity.State = EntityState.Modified;
+                context.SaveChanges();
+            }
         }
 
     }

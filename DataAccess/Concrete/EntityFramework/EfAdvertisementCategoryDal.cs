@@ -9,11 +9,8 @@ using Entities.Concrete;
 
 namespace DataAccess.Concrete.EntityFramework
 {
-    public class AdvertisementPurposeDal : EfEntityRepositoryBase<AdvertisementPurpose>, IAdvertisementPurposeDal
+    public class EfAdvertisementCategoryDal : EfEntityRepositoryBase<AdvertisementCategory, EGonulluContext>, IAdvertisementCategoryDal
     {
-        public AdvertisementPurposeDal(EGonulluContext context)
-         : base(context)
-        { }
 
     }
 }

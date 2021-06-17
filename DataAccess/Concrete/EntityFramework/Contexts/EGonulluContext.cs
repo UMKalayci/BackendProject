@@ -5,13 +5,16 @@ using System.Text;
 using Entities.Concrete;
 using Core.Entities.Concrete;
 
+
 namespace DataAccess.Concrete.EntityFramework.Contexts
 {
     public class EGonulluContext:DbContext
     {
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer(@"Server=.\SQLEXPRESS;Database=EGonulluDb; Trusted_Connection=True;");
+
+            optionsBuilder.UseSqlServer(@"Server=85.96.191.240;Database=ugur_db; User Id=ugur;Password=Qazwsx112_; Integrated Security=False;");
+            //optionsBuilder.UseSqlServer(@"Server=.\SQLEXPRESS;Database=EGonulluDb; Trusted_Connection=True;");
         }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

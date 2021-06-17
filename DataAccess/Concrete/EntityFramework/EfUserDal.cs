@@ -7,24 +7,25 @@ using Core.Entities.Concrete;
 using DataAccess.Abstract;
 using DataAccess.Concrete.EntityFramework.Contexts;
 using Entities.Concrete;
+using Microsoft.EntityFrameworkCore;
 using Remotion.Linq.Parsing.Structure.IntermediateModel;
 
 namespace DataAccess.Concrete.EntityFramework
 {
-    public class EfUserDal:EfEntityRepositoryBase<User>,IUserDal
+    public class EfUserDal:EfEntityRepositoryBase<User, EGonulluContext>,IUserDal
     {
-        public EfUserDal(EGonulluContext context)
-         : base(context)
-        { }
         public List<OperationClaim> GetClaims(User user)
         {
             using (var context = new EGonulluContext())
             {
-                var result = from operationClaim in context.OperationClaims
-                    join userOperationClaim in context.UserOperationClaims
-                        on operationClaim.Id equals userOperationClaim.OperationClaimId
-                    where userOperationClaim.UserId == user.Id
-                    select new OperationClaim {Id = operationClaim.Id, Name = operationClaim.Name};
+                var result = context.UserOperationClaims.Where(x => x.UserId == user.Id)
+                    .Include(x=>x.OperationClaim)
+                    .Select(x => new OperationClaim()
+                    {
+                        Id = x.OperationClaimId,
+                        Name = x.OperationClaim.Name
+                    });
+
                 return result.ToList();
 
             }

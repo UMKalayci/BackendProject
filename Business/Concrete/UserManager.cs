@@ -10,26 +10,34 @@ namespace Business.Concrete
 {
     public class UserManager:IUserService
     {
-        IUnitOfWork _unitOfWork;
+        IUserDal _userDal;
+        IUserOperationClaimDal _userOperationClaimDal;
 
-        public UserManager(IUnitOfWork unitOfWork)
+        public UserManager(IUserDal userDal, IUserOperationClaimDal userOperationClaimDal)
         {
-            _unitOfWork = unitOfWork;
+            _userDal = userDal;
+            _userOperationClaimDal = userOperationClaimDal;
         }
 
         public List<OperationClaim> GetClaims(User user)
         {
-            return _unitOfWork.UserDal.GetClaims(user);
+            return _userDal.GetClaims(user);
         }
 
         public void Add(User user)
         {
-            _unitOfWork.UserDal.Add(user);
+            _userDal.Add(user);
+        }
+
+
+        public void AddUserClaims(UserOperationClaim userOperationClaim)
+        {
+            _userOperationClaimDal.Add(userOperationClaim);
         }
 
         public User GetByMail(string email)
         {
-            return _unitOfWork.UserDal.Get(u => u.Email == email);
+            return _userDal.Get(u => u.Email == email);
         }
     }
 }

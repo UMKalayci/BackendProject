@@ -9,11 +9,8 @@ using Entities.Concrete;
 
 namespace DataAccess.Concrete.EntityFramework
 {
-    public class EfVolunteerDal: EfEntityRepositoryBase<Volunteer>, IVolunteerDal
+    public class EfVolunteerDal: EfEntityRepositoryBase<Volunteer, EGonulluContext>, IVolunteerDal
     {
-        public EfVolunteerDal(EGonulluContext context)
-         : base(context)
-        { }
 
     }
 }

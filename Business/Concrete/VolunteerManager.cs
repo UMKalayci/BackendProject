@@ -30,12 +30,14 @@ namespace Business.Concrete
     public class VolunteerManager : IVolunteerService
     {
         private IUserService _userService;
-        private IUnitOfWork _unitOfWork;
+        private IAdvertisementVolunteerDal _advertisementVolunteerDal;
+        private IVolunteerDal _volunteerDal;
 
-        public VolunteerManager(IUserService userService, IUnitOfWork unitOfWork)
+        public VolunteerManager(IUserService userService, IAdvertisementVolunteerDal advertisementVolunteerDal, IVolunteerDal volunteerDal)
         {
-            _unitOfWork = unitOfWork;
-            _userService = userService;
+            _advertisementVolunteerDal = advertisementVolunteerDal;
+             _userService = userService;
+            _volunteerDal = volunteerDal;
         }
 
         public IDataResult<Volunteer> Register(VolunteerForRegisterDto volunteerForRegisterDto, string password)
@@ -56,6 +58,11 @@ namespace Business.Concrete
                 _userService.Add(user);
                 int userId = _userService.GetByMail(user.Email).Id;
 
+                UserOperationClaim userOperationClaim = new UserOperationClaim();
+                userOperationClaim.UserId = userId;
+                userOperationClaim.OperationClaimId = 1;
+                _userService.AddUserClaims(userOperationClaim);
+
                 var volunter = new Volunteer
                 {
                     UserId = userId,
@@ -72,19 +79,16 @@ namespace Business.Concrete
                     Status = true
                 };
 
-                _unitOfWork.VolunteerDal.Add(volunter);
-
-                _unitOfWork.Commit();
-
+                _volunteerDal.Add(volunter);
+                volunter.User = user;
                 return new SuccessDataResult<Volunteer>(volunter, Messages.UserRegistered);
             }
-            catch
+            catch(Exception hata)
             {
-                _unitOfWork.Dispose();
                 return new ErrorDataResult<Volunteer>(Messages.VolunteerAddError);
             }
         }
-        public IResult AddAdvertisement(AdvertisementVolunteerDto advertisementVolunteerDto)
+        public IResult EnrollAdvertisement(AdvertisementVolunteerDto advertisementVolunteerDto)
         {
             if (advertisementVolunteerDto.AdvertisementId != 0 && advertisementVolunteerDto.VolunteerId != 0)
             {
@@ -94,8 +98,7 @@ namespace Business.Concrete
                 advertisementVolunteer.UpdateDate = DateTime.Now;
                 advertisementVolunteer.InsertDate = DateTime.Now;
                 advertisementVolunteer.Status = true;
-                _unitOfWork.AdvertisementVolunteerDal.Add(advertisementVolunteer);
-                _unitOfWork.Commit();
+                _advertisementVolunteerDal.Add(advertisementVolunteer);
                 return new SuccessResult(Messages.SuccessAdded);
             }
             else

@@ -11,6 +11,7 @@ using Core.Utilities.Security.Jwt;
 using DataAccess.Abstract;
 using DataAccess.Concrete.EntityFramework;
 using DataAccess.Concrete.EntityFramework.Contexts;
+using Business.BusinessAspects.Pagination;
 
 namespace Business.DependencyResolvers.Autofac
 {
@@ -18,7 +19,6 @@ namespace Business.DependencyResolvers.Autofac
     {
         protected override void Load(ContainerBuilder builder)
         {
-            builder.RegisterType<UnitOfWork>().As<IUnitOfWork>();
             builder.RegisterType<EGonulluContext>().As<EGonulluContext>().SingleInstance();
 
             builder.RegisterType<VolunteerManager>().As<IVolunteerService>();
@@ -26,9 +26,18 @@ namespace Business.DependencyResolvers.Autofac
 
             builder.RegisterType<AdvertisementManager>().As<IAdvertisementService>();
             builder.RegisterType<EfAdvertisementDal>().As<IAdvertisementDal>();
+           
+            builder.RegisterType<EfAdvertisementCategoryDal>().As<IAdvertisementCategoryDal>();
+            builder.RegisterType<EfAdvertisementPurposeDal>().As<IAdvertisementPurposeDal>();
 
             builder.RegisterType<UserManager>().As<IUserService>();
             builder.RegisterType<EfUserDal>().As<IUserDal>();
+
+            builder.RegisterType<EfUserOperationClaimDal>().As<IUserOperationClaimDal>();
+
+            builder.RegisterType<EfAdvertisementVolunteerDal>().As<IAdvertisementVolunteerDal>();
+
+            builder.RegisterType<PaginationUriManager>().As<IPaginationUriService>();
 
             builder.RegisterType<AuthManager>().As<IAuthService>();
             builder.RegisterType<JwtHelper>().As<ITokenHelper>();

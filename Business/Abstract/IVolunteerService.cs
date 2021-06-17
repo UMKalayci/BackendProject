@@ -10,7 +10,7 @@ namespace Business.Abstract
     public interface IVolunteerService
     {
         IDataResult<Volunteer> Register(VolunteerForRegisterDto volunteerForRegisterDto, string password);
-        IResult AddAdvertisement(AdvertisementVolunteerDto advertisementVolunteerDto);
+        IResult EnrollAdvertisement(AdvertisementVolunteerDto advertisementVolunteerDto);
         IResult UserExists(string email);
     }
 }

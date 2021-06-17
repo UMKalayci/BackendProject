@@ -15,6 +15,7 @@ namespace WebAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class AdvertisementController : ControllerBase
     {
         private IAdvertisementService _adversimentService;

@@ -12,11 +12,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DataAccess.Concrete.EntityFramework
 {
-    public class EfAdvertisementDal : EfEntityRepositoryBase<Advertisement>, IAdvertisementDal
+    public class EfAdvertisementDal : EfEntityRepositoryBase<Advertisement, EGonulluContext>, IAdvertisementDal
     {
-        public EfAdvertisementDal(EGonulluContext context)
-         : base(context)
-        { }
 
         public IEnumerable<Advertisement> GetList(AdvertisementQuery filter = null, PaginationQuery paginationQuery = null)
         {
