@@ -39,7 +39,14 @@ namespace Business.Concrete
              _userService = userService;
             _volunteerDal = volunteerDal;
         }
-
+        public IDataResult<Volunteer> GetVolunteer(int userId)
+        {
+            var volunteer = _volunteerDal.Get(x => x.UserId == userId);
+            if (volunteer != null)
+                return new SuccessDataResult<Volunteer>(volunteer);
+            else
+                return new ErrorDataResult<Volunteer>(null, Messages.UserNotFound);
+        }
         public IDataResult<Volunteer> Register(VolunteerForRegisterDto volunteerForRegisterDto, string password)
         {
             byte[] passwordHash, passwordSalt;

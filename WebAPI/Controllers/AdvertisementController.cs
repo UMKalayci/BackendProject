@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Business.Abstract;
+using Business.Constants;
 using Core.Extensions;
 using Entities.Concrete;
 using Entities.Dtos;
@@ -27,7 +30,7 @@ namespace WebAPI.Controllers
         [HttpGet("GetList")]
         public ActionResult GetList([FromQuery] AdvertisementQuery advertisementQuery, [FromQuery] PaginationQuery paginationQuery)
         {
-            var result = _adversimentService.GetList(advertisementQuery,paginationQuery);
+            var result = _adversimentService.GetList(advertisementQuery, paginationQuery);
             if (result.Success)
             {
                 return Ok(result.Data);
@@ -36,16 +39,28 @@ namespace WebAPI.Controllers
             return BadRequest(result.Message);
         }
 
+        [Authorize(Policy = "OrganisationOnly")]
         [HttpGet("AddAdvertisement")]
         public ActionResult AddAdvertisement([FromQuery] AdvertisementDto advertisementDto)
         {
-            var result = _adversimentService.Add(advertisementDto);
-            if (result.Success)
+            var identity = HttpContext.User.Identity as ClaimsIdentity;
+            IEnumerable<Claim> claim = identity.Claims;
+            var userClaim = claim
+                .Where(x => x.Type == ClaimTypes.Role)
+                .FirstOrDefault().Value;
+            if (userClaim == "STK")
             {
-                return Ok(result.Data);
+                var result = _adversimentService.Add(advertisementDto);
+                if (result.Success)
+                {
+                    return Ok(result.Data);
+                }
+                return BadRequest(result.Message);
             }
-
-            return BadRequest(result.Message);
+            else
+            {
+                return BadRequest(Messages.AuthorizationDenied);
+            }
         }
     }
 }

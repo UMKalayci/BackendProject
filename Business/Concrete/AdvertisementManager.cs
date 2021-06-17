@@ -1,32 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading;
 using Business.Abstract;
-using Business.BusinessAspects.Autofac;
 using Business.BusinessAspects.Pagination;
 using Business.Constants;
-using Business.ValidationRules.FluentValidation;
-using Core.Aspects.Autofac.Caching;
-using Core.Aspects.Autofac.Logging;
-using Core.Aspects.Autofac.Performance;
-using Core.Aspects.Autofac.Transaction;
-using Core.Aspects.Autofac.Validation;
-using Core.CrossCuttingConcerns.Logging.Log4Net.Loggers;
-using Core.CrossCuttingConcerns.Validation;
-using Core.Entities.Concrete;
-using Core.Extensions;
 using Core.Utilities.Results;
-using Core.Utilities.Security.Hashing;
 using DataAccess.Abstract;
-using DataAccess.Concrete.EntityFramework;
 using Entities.Concrete;
 using Entities.Dtos;
 using Entities.QueryModels;
 using Entities.Views;
-using FluentValidation;
-using Microsoft.AspNetCore.Http;
 
 namespace Business.Concrete
 {
@@ -43,7 +26,6 @@ namespace Business.Concrete
             _advertisementCategoryDal = advertisementCategoryDal;
             _advertisementPurposeDal = advertisementPurposeDal;
         }
-
         public IPaginationResult<List<AdvertisementListView>> GetList(AdvertisementQuery adversimentQuery, PaginationQuery paginationQuery = null)
         {
             var list = _advertisementDal.GetList(adversimentQuery, paginationQuery).ToList();

@@ -1,12 +1,14 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Core.DependencyResolvers;
 using Core.Extensions;
 using Core.Utilities.IoC;
 using Core.Utilities.Security.Encyption;
 using Core.Utilities.Security.Jwt;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -66,7 +68,11 @@ namespace WebAPI
                     };
                 });
 
-           
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("OrganisationOnly", policy => policy.RequireClaim(ClaimTypes.Role,"STK"));
+                options.AddPolicy("VolunteerOnly", policy => policy.RequireClaim(ClaimTypes.Role,"Gönüllü"));
+            });
 
             services.AddDependencyResolvers(new ICoreModule[]
             {

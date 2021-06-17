@@ -12,15 +12,17 @@ namespace WebAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class AuthController:Controller
+    public class AuthController : Controller
     {
         private IAuthService _authService;
         private IVolunteerService _volunteerService;
+        private IOrganisationService _organisationService;
 
-        public AuthController(IAuthService authService, IVolunteerService volunteerService)
+        public AuthController(IAuthService authService, IVolunteerService volunteerService, IOrganisationService organisationService)
         {
             _authService = authService;
             _volunteerService = volunteerService;
+            _organisationService = organisationService;
         }
 
         [HttpPost("login")]
@@ -31,7 +33,22 @@ namespace WebAPI.Controllers
             {
                 return BadRequest(userToLogin.Message);
             }
-
+            if (userForLoginDto.Type == 1)
+            {
+                var volunteer = _volunteerService.GetVolunteer(userToLogin.Data.Id);
+                if (!volunteer.Success)
+                {
+                    return BadRequest(volunteer.Message);
+                }
+            }
+            else if (userForLoginDto.Type == 2)
+            {
+                var organisation = _organisationService.GetOrganisation(userToLogin.Data.Id);
+                if (!organisation.Success)
+                {
+                    return BadRequest(organisation.Message);
+                }
+            }
             var result = _authService.CreateAccessToken(userToLogin.Data);
             if (result.Success)
             {

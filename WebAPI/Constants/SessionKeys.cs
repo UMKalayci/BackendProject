@@ -9,7 +9,7 @@ namespace WebAPI.Constants
     {
         public const string SessionKeyUserId = "_UserId";
         public const string SessionType = "_SessionType";
-        public const string SessionKeyVolunteerId = "_VolunteerId";
-        public const string SessionKeyOrganisationId = "_OrganisationId";
+        public const string SessionKeyVolunteer = "_Volunteer";
+        public const string SessionKeyOrganisation = "_Organisation";
     }
 }

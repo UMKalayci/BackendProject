@@ -24,6 +24,10 @@ namespace Business.DependencyResolvers.Autofac
             builder.RegisterType<VolunteerManager>().As<IVolunteerService>();
             builder.RegisterType<EfVolunteerDal>().As<IVolunteerDal>();
 
+
+            builder.RegisterType<OrganisationManager>().As<IOrganisationService>();
+            builder.RegisterType<EfOrganisationDal>().As<IOrganisationDal>();
+
             builder.RegisterType<AdvertisementManager>().As<IAdvertisementService>();
             builder.RegisterType<EfAdvertisementDal>().As<IAdvertisementDal>();
            
