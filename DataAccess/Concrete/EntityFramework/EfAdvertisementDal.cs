@@ -39,8 +39,8 @@ namespace DataAccess.Concrete.EntityFramework
 
                     query = query.Include(x => x.Organisation);
                     query = query.OrderByDescending(x => x.Status).ThenBy(x => x.StartDate);
-
-                    query = query.Skip((paginationQuery.PageNumber - 1) * paginationQuery.PageSize).Take(paginationQuery.PageSize);
+                    if (paginationQuery != null)
+                        query = query.Skip((paginationQuery.PageNumber - 1) * paginationQuery.PageSize).Take(paginationQuery.PageSize);
                     return query.ToList();
                 }
 

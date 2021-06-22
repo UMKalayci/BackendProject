@@ -14,5 +14,6 @@ namespace Entities.Views
         public int OrganisationId { get; set; }
         public string OrganisationName { get; set; }
         public bool IsOnline { get; set; }
+        public bool Record{ get; set; }
     }
 }

@@ -40,6 +40,10 @@ namespace WebAPI.Controllers
                 {
                     return BadRequest(volunteer.Message);
                 }
+                else
+                {
+                    HttpContext.Session.SetInt32(SessionKeys.SessionKeyVolunteerId, volunteer.Data.VolunteerId);
+                }
             }
             else if (userForLoginDto.Type == 2)
             {
@@ -47,6 +51,10 @@ namespace WebAPI.Controllers
                 if (!organisation.Success)
                 {
                     return BadRequest(organisation.Message);
+                }
+                else
+                {
+                    HttpContext.Session.SetInt32(SessionKeys.SessionKeyOrganisationId, organisation.Data.OrganisationId);
                 }
             }
             var result = _authService.CreateAccessToken(userToLogin.Data);

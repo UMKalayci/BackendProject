@@ -13,6 +13,7 @@ using Entities.QueryModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using WebAPI.Constants;
 
 namespace WebAPI.Controllers
 {
@@ -30,6 +31,8 @@ namespace WebAPI.Controllers
         [HttpGet("GetList")]
         public ActionResult GetList([FromQuery] AdvertisementQuery advertisementQuery, [FromQuery] PaginationQuery paginationQuery)
         {
+            if (HttpContext.Session.GetInt32(SessionKeys.SessionKeyVolunteerId) != null)
+                advertisementQuery.VolunteerId = HttpContext.Session.GetInt32(SessionKeys.SessionKeyVolunteerId).Value;
             var result = _adversimentService.GetList(advertisementQuery, paginationQuery);
             if (result.Success)
             {

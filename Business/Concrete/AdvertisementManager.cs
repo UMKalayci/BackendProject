@@ -19,16 +19,19 @@ namespace Business.Concrete
         private IAdvertisementDal _advertisementDal;
         private IAdvertisementCategoryDal _advertisementCategoryDal;
         private IAdvertisementPurposeDal _advertisementPurposeDal;
-        public AdvertisementManager( IPaginationUriService uriService, IAdvertisementDal advertisementDal, IAdvertisementCategoryDal advertisementCategoryDal, IAdvertisementPurposeDal advertisementPurposeDal)
+        private IVolunteerDal _volunteerDal;
+        public AdvertisementManager( IPaginationUriService uriService, IVolunteerDal volunteerDal, IAdvertisementDal advertisementDal, IAdvertisementCategoryDal advertisementCategoryDal, IAdvertisementPurposeDal advertisementPurposeDal)
         {
             _uriService = uriService;
             _advertisementDal = advertisementDal;
             _advertisementCategoryDal = advertisementCategoryDal;
             _advertisementPurposeDal = advertisementPurposeDal;
+            _volunteerDal = volunteerDal;
         }
         public IPaginationResult<List<AdvertisementListView>> GetList(AdvertisementQuery adversimentQuery, PaginationQuery paginationQuery = null)
         {
             var list = _advertisementDal.GetList(adversimentQuery, paginationQuery).ToList();
+            var volunteerAdvertisementList = _volunteerDal.GetAdvertisementList(adversimentQuery, null);
             List<AdvertisementListView> resultList = new List<AdvertisementListView>();
             foreach (var item in list)
             {
@@ -41,7 +44,8 @@ namespace Business.Concrete
                     EndDate = item.EndDate,
                     IsOnline = item.IsOnline,
                     OrganisationId = item.OrganisationId,
-                    OrganisationName = item.Organisation.OrganisationName
+                    OrganisationName = item.Organisation.OrganisationName,
+                    Record=volunteerAdvertisementList.Any(x=>x.AdvertisementId==item.AdvertisementId)
                 }
                 );
             };
