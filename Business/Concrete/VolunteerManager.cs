@@ -47,6 +47,7 @@ namespace Business.Concrete
             else
                 return new ErrorDataResult<Volunteer>(null, Messages.UserNotFound);
         }
+        [ValidationAspect(typeof(VolunteerValidator), Priority = 1)]
         public IDataResult<Volunteer> Register(VolunteerForRegisterDto volunteerForRegisterDto, string password)
         {
             byte[] passwordHash, passwordSalt;

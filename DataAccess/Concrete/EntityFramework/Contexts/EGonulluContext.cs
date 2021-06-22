@@ -125,6 +125,11 @@ namespace DataAccess.Concrete.EntityFramework.Contexts
                 .WithMany(m => m.OrganisationVolunteer)
                 .HasForeignKey(x => x.VolunteerId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<VolunteerAdvertisementComplated>()
+                .HasOne(x => x.AdvertisementVolunteer)
+                .WithMany()
+                .HasPrincipalKey(x => x.Id);
         }
         public DbSet<OperationClaim> OperationClaims { get; set; }
         public DbSet<User> Users { get; set; }
@@ -138,6 +143,7 @@ namespace DataAccess.Concrete.EntityFramework.Contexts
         public DbSet<OrganisationVolunteer> OrganisationVolunteers { get; set; }
         public DbSet<University> Universitys { get; set; }
         public DbSet<Volunteer> Volunteers { get; set; }
+        public DbSet<VolunteerAdvertisementComplated> VolunteerAdvertisementComplateds { get; set; }
 
     }
 }
