@@ -57,7 +57,7 @@ namespace WebAPI.Controllers
 
         [Authorize(Policy = "OrganisationOnly")]
         [HttpPost("ComplatedAdvertisementApprove")]
-        public ActionResult ComplatedAdvertisement(VolunteerAdvertisementComplatedApproveDto volunteerAdvertisementComplatedApproveDto)
+        public ActionResult ComplatedAdvertisementApprove(VolunteerAdvertisementComplatedApproveDto volunteerAdvertisementComplatedApproveDto)
         {
             if (HttpContext.Session.GetInt32(SessionKeys.SessionKeyOrganisationId) == null)
                 return BadRequest("STK bulunumadı!");
@@ -72,7 +72,7 @@ namespace WebAPI.Controllers
         }
 
         [Authorize(Policy = "OrganisationOnly")]
-        [HttpPost("AdvertisementApproveList")]
+        [HttpGet("AdvertisementApproveList")]
         public ActionResult AdvertisementApproveList()
         {
             if (HttpContext.Session.GetInt32(SessionKeys.SessionKeyOrganisationId) == null)

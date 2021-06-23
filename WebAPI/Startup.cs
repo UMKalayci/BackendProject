@@ -51,7 +51,7 @@ namespace WebAPI
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
                 {
-                    options.TokenValidationParameters=new TokenValidationParameters
+                    options.TokenValidationParameters = new TokenValidationParameters
                     {
                         ValidateIssuer = true,
                         ValidateAudience = true,
@@ -65,10 +65,13 @@ namespace WebAPI
 
             services.AddAuthorization(options =>
             {
-                options.AddPolicy("OrganisationOnly", policy => policy.RequireClaim(ClaimTypes.Role,"STK"));
-                options.AddPolicy("VolunteerOnly", policy => policy.RequireClaim(ClaimTypes.Role,"Gönüllü"));
+                options.AddPolicy("OrganisationOnly", policy => policy.RequireClaim(ClaimTypes.Role, "STK"));
+                options.AddPolicy("VolunteerOnly", policy => policy.RequireClaim(ClaimTypes.Role, "Gönüllü"));
             });
-
+            services.AddControllersWithViews()
+                    .AddNewtonsoftJson(options =>
+                    options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
+                    );
             services.AddDependencyResolvers(new ICoreModule[]
             {
                 new CoreModule(),

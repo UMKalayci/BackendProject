@@ -8,6 +8,6 @@ namespace DataAccess.Abstract
 {
     public interface IVolunteerAdvertisementComplatedDal : IEntityRepository<VolunteerAdvertisementComplated>
     {
-
+        List<VolunteerAdvertisementComplated> GetApproveListByOrganisationId(int organisationId);
     }
 }

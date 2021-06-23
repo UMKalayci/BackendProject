@@ -43,27 +43,20 @@ namespace WebAPI.Controllers
         }
 
         [Authorize(Policy = "OrganisationOnly")]
-        [HttpGet("AddAdvertisement")]
-        public ActionResult AddAdvertisement([FromQuery] AdvertisementDto advertisementDto)
+        [HttpPost("AddAdvertisement")]
+        public ActionResult AddAdvertisement(AdvertisementDto advertisementDto)
         {
-            var identity = HttpContext.User.Identity as ClaimsIdentity;
-            IEnumerable<Claim> claim = identity.Claims;
-            var userClaim = claim
-                .Where(x => x.Type == ClaimTypes.Role)
-                .FirstOrDefault().Value;
-            if (userClaim == "STK")
+            if (HttpContext.Session.GetInt32(SessionKeys.SessionKeyOrganisationId) == null)
+                return BadRequest("STK bulunumadı!");
+            var oganisationId = HttpContext.Session.GetInt32(SessionKeys.SessionKeyOrganisationId).Value;
+
+            advertisementDto.OrganisationId = oganisationId;
+            var result = _adversimentService.Add(advertisementDto);
+            if (result.Success)
             {
-                var result = _adversimentService.Add(advertisementDto);
-                if (result.Success)
-                {
-                    return Ok(result.Data);
-                }
-                return BadRequest(result.Message);
+                return Ok(result.Data);
             }
-            else
-            {
-                return BadRequest(Messages.AuthorizationDenied);
-            }
+            return BadRequest(result.Message);
         }
     }
 }

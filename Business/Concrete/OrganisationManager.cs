@@ -130,19 +130,17 @@ namespace Business.Concrete
         }
         public IDataResult<List<ApproveListView>> AdvertisementApproveList(int organisationId)
         {
-            var list = _volunteerAdvertisementComplatedDal
-                .GetList(x => 
-                x.AdvertisementVolunteer.Advertisement.Organisation.OrganisationId == organisationId
-                && x.ConfirmationStatus==2).ToList();
+            var list = _volunteerAdvertisementComplatedDal.GetApproveListByOrganisationId(organisationId);
             List<ApproveListView> resultList = new List<ApproveListView>();
             foreach (var item in list)
             {
                 resultList.Add(new ApproveListView()
                 {
-                    Advertisement=item.AdvertisementVolunteer.Advertisement,
-                    Volunteer=item.AdvertisementVolunteer.Volunteer,
+                    AdvertisementName=item.AdvertisementVolunteer.Advertisement.AdvertisementTitle,
+                    VolunteerName=item.AdvertisementVolunteer.Volunteer.User.FirstName + " " +item.AdvertisementVolunteer.Volunteer.User.LastName,
                     ConfirmationStatus=item.ConfirmationStatus,
-                    TotalWork=item.TotalWork
+                    TotalWork=item.TotalWork,
+                    ComplatedId=item.Id
                 });
             }
 
