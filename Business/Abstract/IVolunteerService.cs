@@ -12,6 +12,7 @@ namespace Business.Abstract
         IDataResult<Volunteer> GetVolunteer(int userId);
         IDataResult<Volunteer> Register(VolunteerForRegisterDto volunteerForRegisterDto, string password);
         IResult EnrollAdvertisement(AdvertisementVolunteerDto advertisementVolunteerDto);
+        IResult ComplatedAdvertisement(VolunteerAdvertisementComplatedDto volunteerAdvertisementComplatedDto);
         IResult UserExists(string email);
     }
 }

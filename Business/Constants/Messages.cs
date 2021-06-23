@@ -22,6 +22,8 @@
         public static string SuccessAdded = "Ekleme işlemi başarılı.";
         public static string ErrorAdded = "Ekleme işlemi hatalı.";
 
+        public static string Error = "Hata";
+
         public static string AuthorizationDenied = "Yetkiniz yok";
     }
 }

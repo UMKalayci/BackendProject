@@ -56,13 +56,31 @@ namespace WebAPI.Controllers
         [HttpPost("EnrollAdvertisement")]
         public ActionResult EnrollAdvertisement(AdvertisementVolunteerDto advertisementVolunteerDto)
         {
+            if (HttpContext.Session.GetInt32(SessionKeys.SessionKeyVolunteerId) == null)
+                return BadRequest("Gönüllü bulunumadı!");
+            advertisementVolunteerDto.VolunteerId = HttpContext.Session.GetInt32(SessionKeys.SessionKeyVolunteerId).Value;
             var result = _volunteerService.EnrollAdvertisement(advertisementVolunteerDto);
-            if (!result.Success)
+            if (result.Success)
             {
-                return BadRequest(result.Message);
+                return Ok(result.Message);
             }
             return BadRequest(result.Message);
         }
 
+        [Authorize(Policy = "VolunteerOnly")]
+        [HttpPost("ComplatedAdvertisement")]
+        public ActionResult ComplatedAdvertisement(VolunteerAdvertisementComplatedDto volunteerAdvertisementComplatedDto)
+        {
+            if (HttpContext.Session.GetInt32(SessionKeys.SessionKeyVolunteerId) == null)
+                return BadRequest("Gönüllü bulunumadı!");
+            volunteerAdvertisementComplatedDto.VolunteerId = HttpContext.Session.GetInt32(SessionKeys.SessionKeyVolunteerId).Value;
+
+            var result = _volunteerService.ComplatedAdvertisement(volunteerAdvertisementComplatedDto);
+            if (result.Success)
+            {
+                return Ok(result.Message);
+            }
+            return BadRequest(result.Message);
+        }
     }
 }

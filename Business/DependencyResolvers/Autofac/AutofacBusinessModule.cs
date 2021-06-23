@@ -41,6 +41,8 @@ namespace Business.DependencyResolvers.Autofac
 
             builder.RegisterType<EfAdvertisementVolunteerDal>().As<IAdvertisementVolunteerDal>();
 
+            builder.RegisterType<EfVolunteerAdvertisementComplatedDal>().As<IVolunteerAdvertisementComplatedDal>();
+
             builder.RegisterType<PaginationUriManager>().As<IPaginationUriService>();
 
             builder.RegisterType<AuthManager>().As<IAuthService>();

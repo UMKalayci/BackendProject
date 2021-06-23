@@ -58,7 +58,9 @@ namespace Business.Concrete
                 advertisementDto.StartDate != DateTime.MinValue &&
                 advertisementDto.EndDate != DateTime.MinValue &&
                 advertisementDto.AdvertisementTitle != null &&
-                advertisementDto.AdvertisementDesc != null
+                advertisementDto.AdvertisementDesc != null &&
+                advertisementDto.AppStartDate != DateTime.MinValue &&
+                advertisementDto.AppEndDate != DateTime.MinValue 
                 )
             {
                 try
@@ -70,6 +72,8 @@ namespace Business.Concrete
                     advertisement.OrganisationId = advertisementDto.OrganisationId;
                     advertisement.StartDate = advertisementDto.StartDate;
                     advertisement.EndDate = advertisementDto.EndDate;
+                    advertisement.AppEndDate = advertisementDto.AppEndDate;
+                    advertisement.AppStartDate = advertisementDto.AppStartDate;
                     advertisement.InsertDate = now;
                     advertisement.UpdateDate = now;
                     advertisement.Status = false;

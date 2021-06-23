@@ -31,13 +31,17 @@ namespace Business.Concrete
     {
         private IUserService _userService;
         private IAdvertisementVolunteerDal _advertisementVolunteerDal;
+        private IVolunteerAdvertisementComplatedDal _volunteerAdvertisementComplatedDal;
         private IVolunteerDal _volunteerDal;
+        private IAdvertisementDal _advertisementDal;
 
-        public VolunteerManager(IUserService userService, IAdvertisementVolunteerDal advertisementVolunteerDal, IVolunteerDal volunteerDal)
+        public VolunteerManager(IUserService userService, IAdvertisementDal advertisementDal, IVolunteerAdvertisementComplatedDal volunteerAdvertisementComplatedDal, IAdvertisementVolunteerDal advertisementVolunteerDal, IVolunteerDal volunteerDal)
         {
             _advertisementVolunteerDal = advertisementVolunteerDal;
              _userService = userService;
             _volunteerDal = volunteerDal;
+            _volunteerAdvertisementComplatedDal = volunteerAdvertisementComplatedDal;
+            _advertisementDal = advertisementDal;
         }
         public IDataResult<Volunteer> GetVolunteer(int userId)
         {
@@ -98,7 +102,12 @@ namespace Business.Concrete
         }
         public IResult EnrollAdvertisement(AdvertisementVolunteerDto advertisementVolunteerDto)
         {
-            if (advertisementVolunteerDto.AdvertisementId != 0 && advertisementVolunteerDto.VolunteerId != 0)
+            var advertisement = _advertisementDal.Get(x => x.AdvertisementId == advertisementVolunteerDto.AdvertisementId);
+
+            if(advertisement==null||advertisement.AppStartDate>DateTime.Now||advertisement.AppEndDate<DateTime.Now)
+                return new ErrorResult(Messages.Error);
+
+            if (advertisementVolunteerDto.AdvertisementId > 0 && advertisementVolunteerDto.VolunteerId > 0)
             {
                 AdvertisementVolunteer advertisementVolunteer = new AdvertisementVolunteer();
                 advertisementVolunteer.VolunteerId = advertisementVolunteerDto.VolunteerId;
@@ -107,6 +116,31 @@ namespace Business.Concrete
                 advertisementVolunteer.InsertDate = DateTime.Now;
                 advertisementVolunteer.Status = true;
                 _advertisementVolunteerDal.Add(advertisementVolunteer);
+                return new SuccessResult(Messages.SuccessAdded);
+            }
+            else
+            {
+                return new ErrorResult(Messages.ErrorAdded);
+            }
+        }
+
+        public IResult ComplatedAdvertisement(VolunteerAdvertisementComplatedDto volunteerAdvertisementComplatedDto)
+        {
+            var advertisementVolunter = _advertisementVolunteerDal.Get(x => x.Id == volunteerAdvertisementComplatedDto.AdvertisementVolunteerId); ;
+            if (advertisementVolunter==null || volunteerAdvertisementComplatedDto.VolunteerId != advertisementVolunter.VolunteerId)
+            {
+                return new ErrorResult(Messages.Error);
+            }
+            if (volunteerAdvertisementComplatedDto.AdvertisementVolunteerId > 0 && volunteerAdvertisementComplatedDto.TotalWork>0 )
+            {
+                VolunteerAdvertisementComplated volunteerAdvertisementComplated = new VolunteerAdvertisementComplated();
+                volunteerAdvertisementComplated.AdvertisementVolunteerId = volunteerAdvertisementComplatedDto.AdvertisementVolunteerId;
+                volunteerAdvertisementComplated.TotalWork = volunteerAdvertisementComplatedDto.TotalWork;
+                volunteerAdvertisementComplated.Status = true;
+                volunteerAdvertisementComplated.InsertDate = DateTime.Now;
+                volunteerAdvertisementComplated.UpdateDate = DateTime.Now;
+                volunteerAdvertisementComplated.ConfirmationStatus = 2;
+                _volunteerAdvertisementComplatedDal.Add(volunteerAdvertisementComplated);
                 return new SuccessResult(Messages.SuccessAdded);
             }
             else

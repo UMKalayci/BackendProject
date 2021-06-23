@@ -13,6 +13,8 @@ namespace Entities.Concrete
         public string AdvertisementDesc { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
+        public DateTime AppStartDate { get; set; }
+        public DateTime AppEndDate { get; set; }
         public int OrganisationId { get; set; }
         public bool IsOnline { get; set; }
 

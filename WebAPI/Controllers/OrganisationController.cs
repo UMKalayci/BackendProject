@@ -53,5 +53,38 @@ namespace WebAPI.Controllers
 
             return BadRequest(registerResult.Message);
         }
+
+
+        [Authorize(Policy = "OrganisationOnly")]
+        [HttpPost("ComplatedAdvertisementApprove")]
+        public ActionResult ComplatedAdvertisement(VolunteerAdvertisementComplatedApproveDto volunteerAdvertisementComplatedApproveDto)
+        {
+            if (HttpContext.Session.GetInt32(SessionKeys.SessionKeyOrganisationId) == null)
+                return BadRequest("STK bulunumadı!");
+            volunteerAdvertisementComplatedApproveDto.OrganisationId = HttpContext.Session.GetInt32(SessionKeys.SessionKeyOrganisationId).Value;
+
+            var result = _organisationService.ComplatedAdvertisementApprove(volunteerAdvertisementComplatedApproveDto);
+            if (result.Success)
+            {
+                return Ok(result.Message);
+            }
+            return BadRequest(result.Message);
+        }
+
+        [Authorize(Policy = "OrganisationOnly")]
+        [HttpPost("AdvertisementApproveList")]
+        public ActionResult AdvertisementApproveList()
+        {
+            if (HttpContext.Session.GetInt32(SessionKeys.SessionKeyOrganisationId) == null)
+                return BadRequest("STK bulunumadı!");
+            var oganisationId = HttpContext.Session.GetInt32(SessionKeys.SessionKeyOrganisationId).Value;
+
+            var result = _organisationService.AdvertisementApproveList(oganisationId);
+            if (result.Success)
+            {
+                return Ok(result.Data);
+            }
+            return BadRequest(result.Message);
+        }
     }
 }

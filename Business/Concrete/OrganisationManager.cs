@@ -22,6 +22,7 @@ using DataAccess.Abstract;
 using DataAccess.Concrete.EntityFramework;
 using Entities.Concrete;
 using Entities.Dtos;
+using Entities.Views;
 using FluentValidation;
 using Microsoft.AspNetCore.Http;
 
@@ -30,12 +31,19 @@ namespace Business.Concrete
     public class OrganisationManager : IOrganisationService
     {
         private IUserService _userService;
+        private IVolunteerAdvertisementComplatedDal _volunteerAdvertisementComplatedDal;
         private IOrganisationDal _organisationDal;
+        private IAdvertisementVolunteerDal _advertisementVolunteerDal;
+        private IAdvertisementDal _advertisementDal;
 
-        public OrganisationManager(IUserService userService, IOrganisationDal organisationDal)
+        public OrganisationManager(IUserService userService, IVolunteerAdvertisementComplatedDal volunteerAdvertisementComplatedDal, IAdvertisementVolunteerDal advertisementVolunteerDal, IAdvertisementDal advertisementDal, IOrganisationDal organisationDal)
         {
             _userService = userService;
             _organisationDal = organisationDal;
+            _advertisementDal = advertisementDal;
+            _volunteerAdvertisementComplatedDal = volunteerAdvertisementComplatedDal;
+
+            _advertisementVolunteerDal = advertisementVolunteerDal;
         }
         public IDataResult<Organisation> GetOrganisation(int userId)
         {
@@ -92,6 +100,53 @@ namespace Business.Concrete
             {
                 return new ErrorDataResult<Organisation>(Messages.SuccessAdded);
             }
+        }
+        public IResult ComplatedAdvertisementApprove(VolunteerAdvertisementComplatedApproveDto volunteerAdvertisementComplatedApproveDto)
+        {
+            try
+            {
+                var approveRecord = _volunteerAdvertisementComplatedDal.Get(x => x.Id == volunteerAdvertisementComplatedApproveDto.ComplatedId);
+
+                var advertisementVolunter = _advertisementVolunteerDal.Get(x => x.Id == approveRecord.AdvertisementVolunteerId);
+                var advertisement = _advertisementDal.Get(x => x.AdvertisementId == advertisementVolunter.AdvertisementId);
+                if (advertisement.OrganisationId == volunteerAdvertisementComplatedApproveDto.OrganisationId)
+                {
+                    approveRecord.ConfirmationStatus = volunteerAdvertisementComplatedApproveDto.Approve;
+                    approveRecord.UpdateDate = DateTime.Now;
+                    _volunteerAdvertisementComplatedDal.Update(approveRecord);
+                    return new SuccessResult(Messages.SuccessAdded);
+
+                }
+                else
+                {
+                    return new ErrorResult(Messages.Error);
+                }
+
+            }
+            catch
+            {
+                return new ErrorResult(Messages.Error);
+            }
+        }
+        public IDataResult<List<ApproveListView>> AdvertisementApproveList(int organisationId)
+        {
+            var list = _volunteerAdvertisementComplatedDal
+                .GetList(x => 
+                x.AdvertisementVolunteer.Advertisement.Organisation.OrganisationId == organisationId
+                && x.ConfirmationStatus==2).ToList();
+            List<ApproveListView> resultList = new List<ApproveListView>();
+            foreach (var item in list)
+            {
+                resultList.Add(new ApproveListView()
+                {
+                    Advertisement=item.AdvertisementVolunteer.Advertisement,
+                    Volunteer=item.AdvertisementVolunteer.Volunteer,
+                    ConfirmationStatus=item.ConfirmationStatus,
+                    TotalWork=item.TotalWork
+                });
+            }
+
+            return new SuccessDataResult<List<ApproveListView>>(resultList);
         }
         public IResult UserExists(string email)
         {
