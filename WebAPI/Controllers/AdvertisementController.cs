@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
+using System.Text;
 using System.Threading.Tasks;
 using Business.Abstract;
 using Business.Constants;
@@ -46,9 +47,13 @@ namespace WebAPI.Controllers
         [HttpPost("AddAdvertisement")]
         public ActionResult AddAdvertisement(AdvertisementDto advertisementDto)
         {
-            if (HttpContext.Session.GetInt32(SessionKeys.SessionKeyOrganisationId) == null)
+            var bytes = default(byte[]);
+            HttpContext.Session.TryGetValue(SessionKeys.SessionKeyOrganisationId, out bytes);
+            var content = Encoding.UTF8.GetString(bytes);
+
+            if (content == null)
                 return BadRequest("STK bulunumadı!");
-            var oganisationId = HttpContext.Session.GetInt32(SessionKeys.SessionKeyOrganisationId).Value;
+            var oganisationId = Convert.ToInt32(content);
 
             advertisementDto.OrganisationId = oganisationId;
             var result = _adversimentService.Add(advertisementDto);

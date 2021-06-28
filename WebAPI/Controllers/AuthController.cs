@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Business.Abstract;
+﻿using Business.Abstract;
 using Entities.Dtos;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Text;
 using WebAPI.Constants;
 
 namespace WebAPI.Controllers
@@ -42,7 +38,8 @@ namespace WebAPI.Controllers
                 }
                 else
                 {
-                    HttpContext.Session.SetInt32(SessionKeys.SessionKeyVolunteerId, volunteer.Data.VolunteerId);
+                    var bytes = Encoding.UTF8.GetBytes(volunteer.Data.VolunteerId.ToString());
+                    HttpContext.Session.Set(SessionKeys.SessionKeyVolunteerId, bytes);
                 }
             }
             else if (userForLoginDto.Type == 2)
@@ -54,14 +51,19 @@ namespace WebAPI.Controllers
                 }
                 else
                 {
-                    HttpContext.Session.SetInt32(SessionKeys.SessionKeyOrganisationId, organisation.Data.OrganisationId);
+
+                    var bytes = Encoding.UTF8.GetBytes(organisation.Data.OrganisationId.ToString());
+                    HttpContext.Session.Set(SessionKeys.SessionKeyOrganisationId, bytes);
                 }
             }
             var result = _authService.CreateAccessToken(userToLogin.Data);
             if (result.Success)
             {
-                HttpContext.Session.SetInt32(SessionKeys.SessionKeyUserId, userToLogin.Data.Id);
-                HttpContext.Session.SetInt32(SessionKeys.SessionType, userForLoginDto.Type);
+                var bytes = Encoding.UTF8.GetBytes(userToLogin.Data.Id.ToString());
+                HttpContext.Session.Set(SessionKeys.SessionKeyUserId, bytes);
+
+                var bytes2 = Encoding.UTF8.GetBytes(userForLoginDto.Type.ToString());
+                HttpContext.Session.Set(SessionKeys.SessionType, bytes2);
                 return Ok(result.Data);
             }
 
