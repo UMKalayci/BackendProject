@@ -40,11 +40,6 @@ namespace WebAPI
             services.AddSession();
 
             services.AddControllers();
-            services.AddCors(options =>
-            {
-                options.AddPolicy("AllowOrigin",
-                    builder => builder.WithOrigins("http://localhost:3000"));
-            });
 
             var tokenOptions = Configuration.GetSection("TokenOptions").Get<TokenOptions>();
 
@@ -76,6 +71,17 @@ namespace WebAPI
             {
                 new CoreModule(),
             });
+
+            services.AddCors(options =>
+            {
+                options.AddPolicy(
+                   name: "AllowOrigin",
+                   builder => {
+                       builder.AllowAnyOrigin()
+                      .AllowAnyMethod()
+                      .AllowAnyHeader();
+                   });
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -86,11 +92,12 @@ namespace WebAPI
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseCors(builder => builder.WithOrigins("http://localhost:3000").AllowAnyHeader());
 
             app.UseHttpsRedirection();
 
             app.UseRouting();
+
+            app.UseCors("AllowOrigin");
 
             app.UseAuthentication();
 

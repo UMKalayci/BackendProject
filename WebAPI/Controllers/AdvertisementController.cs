@@ -23,9 +23,11 @@ namespace WebAPI.Controllers
     public class AdvertisementController : ControllerBase
     {
         private IAdvertisementService _adversimentService;
-        public AdvertisementController(IAdvertisementService adversimentService)
+        private IOrganisationService _organisationService;
+        public AdvertisementController(IAdvertisementService adversimentService, IOrganisationService organisationService)
         {
             _adversimentService = adversimentService;
+            _organisationService = organisationService;
         }
 
         [HttpGet("GetList")]
@@ -46,11 +48,15 @@ namespace WebAPI.Controllers
         [HttpPost("AddAdvertisement")]
         public ActionResult AddAdvertisement(AdvertisementDto advertisementDto)
         {
-            if (HttpContext.Session.GetInt32(SessionKeys.SessionKeyOrganisationId) == null)
-                return BadRequest("STK bulunumadı!");
-            var oganisationId = HttpContext.Session.GetInt32(SessionKeys.SessionKeyOrganisationId).Value;
+            var userID = User.Claims.Where(a => a.Type == ClaimTypes.NameIdentifier).FirstOrDefault().Value;
+           var organisation= _organisationService.GetOrganisation(Convert.ToInt32(userID));
 
-            advertisementDto.OrganisationId = oganisationId;
+            if (organisation.Data == null)
+            {
+                return BadRequest("STK bulunumadı!");
+            }
+
+            advertisementDto.OrganisationId = organisation.Data.OrganisationId;
             var result = _adversimentService.Add(advertisementDto);
             if (result.Success)
             {
