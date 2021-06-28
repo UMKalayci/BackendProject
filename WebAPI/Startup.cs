@@ -35,6 +35,10 @@ namespace WebAPI
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddDistributedMemoryCache();
+
+            services.AddSession();
+
             services.AddControllers();
             services.AddCors(options =>
             {
@@ -71,13 +75,6 @@ namespace WebAPI
             services.AddDependencyResolvers(new ICoreModule[]
             {
                 new CoreModule(),
-            });
-
-            services.AddSession(options =>
-            {
-                // 30 dakikalý Redis Timeout Süresi.
-                options.IdleTimeout = TimeSpan.FromMinutes(30);
-                options.Cookie.HttpOnly = true;
             });
         }
 
