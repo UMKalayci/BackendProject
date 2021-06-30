@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Business.Abstract;
 using Core.Extensions;
@@ -56,9 +57,13 @@ namespace WebAPI.Controllers
         [HttpPost("EnrollAdvertisement")]
         public ActionResult EnrollAdvertisement(AdvertisementVolunteerDto advertisementVolunteerDto)
         {
-            if (HttpContext.Session.GetInt32(SessionKeys.SessionKeyVolunteerId) == null)
-                return BadRequest("Gönüllü bulunumadı!");
-            advertisementVolunteerDto.VolunteerId = HttpContext.Session.GetInt32(SessionKeys.SessionKeyVolunteerId).Value;
+            var userID = User.Claims.Where(a => a.Type == ClaimTypes.NameIdentifier).FirstOrDefault().Value;
+            var volunteer = _volunteerService.GetVolunteer(Convert.ToInt32(userID));
+            if (volunteer.Data == null)
+            {
+                return BadRequest("STK bulunumadı!");
+            }
+            advertisementVolunteerDto.VolunteerId = volunteer.Data.VolunteerId;
             var result = _volunteerService.EnrollAdvertisement(advertisementVolunteerDto);
             if (result.Success)
             {
@@ -71,9 +76,13 @@ namespace WebAPI.Controllers
         [HttpPost("ComplatedAdvertisement")]
         public ActionResult ComplatedAdvertisement(VolunteerAdvertisementComplatedDto volunteerAdvertisementComplatedDto)
         {
-            if (HttpContext.Session.GetInt32(SessionKeys.SessionKeyVolunteerId) == null)
-                return BadRequest("Gönüllü bulunumadı!");
-            volunteerAdvertisementComplatedDto.VolunteerId = HttpContext.Session.GetInt32(SessionKeys.SessionKeyVolunteerId).Value;
+            var userID = User.Claims.Where(a => a.Type == ClaimTypes.NameIdentifier).FirstOrDefault().Value;
+            var volunteer = _volunteerService.GetVolunteer(Convert.ToInt32(userID));
+            if (volunteer.Data == null)
+            {
+                return BadRequest("STK bulunumadı!");
+            }
+            volunteerAdvertisementComplatedDto.VolunteerId = volunteer.Data.VolunteerId;
 
             var result = _volunteerService.ComplatedAdvertisement(volunteerAdvertisementComplatedDto);
             if (result.Success)
@@ -82,5 +91,21 @@ namespace WebAPI.Controllers
             }
             return BadRequest(result.Message);
         }
+
+        [Authorize(Policy = "VolunteerOnly")]
+        [HttpGet("GetVolunteerProfile")]
+        public ActionResult GetVolunteerProfile()
+        {
+            var userID = User.Claims.Where(a => a.Type == ClaimTypes.NameIdentifier).FirstOrDefault().Value;
+
+            var result = _volunteerService.GetVolunterProfile(Convert.ToInt32(userID));
+            if (result.Success)
+            {
+                return Ok(result.Data);
+            }
+            return BadRequest(result.Message);
+        }
+
+
     }
 }

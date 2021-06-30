@@ -11,5 +11,7 @@ namespace DataAccess.Abstract
     {
         IEnumerable<Advertisement> GetAdvertisementList(AdvertisementQuery filter, PaginationQuery paginationQuery = null);
         int GetAdvertisementCount(AdvertisementQuery filter);
+
+        Volunteer GetVolunterProfile(int userId);
     }
 }

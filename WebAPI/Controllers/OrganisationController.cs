@@ -59,9 +59,13 @@ namespace WebAPI.Controllers
         [HttpPost("ComplatedAdvertisementApprove")]
         public ActionResult ComplatedAdvertisementApprove(VolunteerAdvertisementComplatedApproveDto volunteerAdvertisementComplatedApproveDto)
         {
-            if (HttpContext.Session.GetInt32(SessionKeys.SessionKeyOrganisationId) == null)
+            var userID = User.Claims.Where(a => a.Type == ClaimTypes.NameIdentifier).FirstOrDefault().Value;
+            var organisation = _organisationService.GetOrganisation(Convert.ToInt32(userID));
+            if (organisation.Data == null)
+            {
                 return BadRequest("STK bulunumadı!");
-            volunteerAdvertisementComplatedApproveDto.OrganisationId = HttpContext.Session.GetInt32(SessionKeys.SessionKeyOrganisationId).Value;
+            }
+            volunteerAdvertisementComplatedApproveDto.OrganisationId = organisation.Data.OrganisationId;
 
             var result = _organisationService.ComplatedAdvertisementApprove(volunteerAdvertisementComplatedApproveDto);
             if (result.Success)
@@ -75,11 +79,13 @@ namespace WebAPI.Controllers
         [HttpGet("AdvertisementApproveList")]
         public ActionResult AdvertisementApproveList()
         {
-            if (HttpContext.Session.GetInt32(SessionKeys.SessionKeyOrganisationId) == null)
+            var userID = User.Claims.Where(a => a.Type == ClaimTypes.NameIdentifier).FirstOrDefault().Value;
+            var organisation = _organisationService.GetOrganisation(Convert.ToInt32(userID));
+            if (organisation.Data == null)
+            {
                 return BadRequest("STK bulunumadı!");
-            var oganisationId = HttpContext.Session.GetInt32(SessionKeys.SessionKeyOrganisationId).Value;
-
-            var result = _organisationService.AdvertisementApproveList(oganisationId);
+            }
+            var result = _organisationService.AdvertisementApproveList(organisation.Data.OrganisationId);
             if (result.Success)
             {
                 return Ok(result.Data);

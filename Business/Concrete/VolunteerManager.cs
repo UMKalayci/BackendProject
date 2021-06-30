@@ -22,6 +22,7 @@ using DataAccess.Abstract;
 using DataAccess.Concrete.EntityFramework;
 using Entities.Concrete;
 using Entities.Dtos;
+using Entities.Views;
 using FluentValidation;
 using Microsoft.AspNetCore.Http;
 
@@ -38,7 +39,7 @@ namespace Business.Concrete
         public VolunteerManager(IUserService userService, IAdvertisementDal advertisementDal, IVolunteerAdvertisementComplatedDal volunteerAdvertisementComplatedDal, IAdvertisementVolunteerDal advertisementVolunteerDal, IVolunteerDal volunteerDal)
         {
             _advertisementVolunteerDal = advertisementVolunteerDal;
-             _userService = userService;
+            _userService = userService;
             _volunteerDal = volunteerDal;
             _volunteerAdvertisementComplatedDal = volunteerAdvertisementComplatedDal;
             _advertisementDal = advertisementDal;
@@ -50,6 +51,18 @@ namespace Business.Concrete
                 return new SuccessDataResult<Volunteer>(volunteer);
             else
                 return new ErrorDataResult<Volunteer>(null, Messages.UserNotFound);
+        }
+
+        public IDataResult<VolunteerProfileView> GetVolunterProfile(int userId)
+        {
+            var volunteer = _volunteerDal.GetVolunterProfile(userId);
+            VolunteerProfileView profileView = new VolunteerProfileView();
+            profileView.Location = volunteer.City.CityName;
+            profileView.Name = volunteer.User.FirstName;
+            profileView.Surname = volunteer.User.LastName;
+            profileView.VolunteerSince = volunteer.InsertDate;
+
+            return new SuccessDataResult<VolunteerProfileView>(profileView);
         }
         [ValidationAspect(typeof(VolunteerValidator), Priority = 1)]
         public IDataResult<Volunteer> Register(VolunteerForRegisterDto volunteerForRegisterDto, string password)
@@ -95,7 +108,7 @@ namespace Business.Concrete
                 volunter.User = user;
                 return new SuccessDataResult<Volunteer>(volunter, Messages.UserRegistered);
             }
-            catch(Exception hata)
+            catch (Exception hata)
             {
                 return new ErrorDataResult<Volunteer>(Messages.VolunteerAddError);
             }
@@ -104,7 +117,7 @@ namespace Business.Concrete
         {
             var advertisement = _advertisementDal.Get(x => x.AdvertisementId == advertisementVolunteerDto.AdvertisementId);
 
-            if(advertisement==null||advertisement.AppStartDate>DateTime.Now||advertisement.AppEndDate<DateTime.Now)
+            if (advertisement == null || advertisement.AppStartDate > DateTime.Now || advertisement.AppEndDate < DateTime.Now)
                 return new ErrorResult(Messages.Error);
 
             if (advertisementVolunteerDto.AdvertisementId > 0 && advertisementVolunteerDto.VolunteerId > 0)
@@ -127,11 +140,11 @@ namespace Business.Concrete
         public IResult ComplatedAdvertisement(VolunteerAdvertisementComplatedDto volunteerAdvertisementComplatedDto)
         {
             var advertisementVolunter = _advertisementVolunteerDal.Get(x => x.Id == volunteerAdvertisementComplatedDto.AdvertisementVolunteerId); ;
-            if (advertisementVolunter==null || volunteerAdvertisementComplatedDto.VolunteerId != advertisementVolunter.VolunteerId)
+            if (advertisementVolunter == null || volunteerAdvertisementComplatedDto.VolunteerId != advertisementVolunter.VolunteerId)
             {
                 return new ErrorResult(Messages.Error);
             }
-            if (volunteerAdvertisementComplatedDto.AdvertisementVolunteerId > 0 && volunteerAdvertisementComplatedDto.TotalWork>0 )
+            if (volunteerAdvertisementComplatedDto.AdvertisementVolunteerId > 0 && volunteerAdvertisementComplatedDto.TotalWork > 0)
             {
                 VolunteerAdvertisementComplated volunteerAdvertisementComplated = new VolunteerAdvertisementComplated();
                 volunteerAdvertisementComplated.AdvertisementVolunteerId = volunteerAdvertisementComplatedDto.AdvertisementVolunteerId;

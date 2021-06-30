@@ -45,6 +45,11 @@ namespace Business.DependencyResolvers.Autofac
 
             builder.RegisterType<PaginationUriManager>().As<IPaginationUriService>();
 
+            builder.RegisterType<CategoryManager>().As<ICategoryService>();
+            builder.RegisterType<PurposeManager>().As<IPurposeService>();
+            builder.RegisterType<EfPurposeDal>().As<IPurposeDal>();
+            builder.RegisterType<EfCategoryDal>().As<ICategoryDal>();
+
             builder.RegisterType<AuthManager>().As<IAuthService>();
             builder.RegisterType<JwtHelper>().As<ITokenHelper>();
 

@@ -18,6 +18,7 @@ namespace DataAccess.Concrete.EntityFramework.Contexts
         }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+
             modelBuilder.Entity<Volunteer>()
                 .HasKey(x => x.VolunteerId);
 
@@ -47,6 +48,13 @@ namespace DataAccess.Concrete.EntityFramework.Contexts
 
             modelBuilder.Entity<AdvertisementCategory>()
             .HasKey(x => new { x.CategoryId, x.AdvertisementId });
+
+            modelBuilder.Entity<Advertisement>()
+               .HasOne(x => x.City)
+               .WithMany(m => m.Advertisements)
+               .HasForeignKey(x => x.CityId)
+               .OnDelete(DeleteBehavior.Restrict);
+
             modelBuilder.Entity<AdvertisementCategory>()
                 .HasOne(x => x.Advertisement)
                 .WithMany(m => m.AdvertisementCategorys)

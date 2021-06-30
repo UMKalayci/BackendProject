@@ -8,6 +8,7 @@ using DataAccess.Abstract;
 using DataAccess.Concrete.EntityFramework.Contexts;
 using Entities.Concrete;
 using Entities.QueryModels;
+using Microsoft.EntityFrameworkCore;
 
 namespace DataAccess.Concrete.EntityFramework
 {
@@ -48,6 +49,17 @@ namespace DataAccess.Concrete.EntityFramework
             }
         }
 
+        public Volunteer GetVolunterProfile(int userId)
+        {
+            using (var context = new EGonulluContext())
+            {
+               var query= context.Volunteers.Where(x => x.UserId == userId)
+                    .Include(x => x.User).Include(x => x.City);
+
+                return query.FirstOrDefault();
+            }
+
+        }
         public int GetAdvertisementCount(AdvertisementQuery filter = null)
         {
             using (var context = new EGonulluContext())

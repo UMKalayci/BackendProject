@@ -2,6 +2,7 @@
 using Entities.Abstract;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Text;
 
 namespace Entities.Concrete
@@ -17,10 +18,14 @@ namespace Entities.Concrete
         public DateTime AppEndDate { get; set; }
         public int OrganisationId { get; set; }
         public bool IsOnline { get; set; }
-
+        [DefaultValue(1)]
+        public int CityId { get; set; }
+        public byte[] Image { get; set; }
+        public bool IsApplied { get; set; }
         public ICollection<AdvertisementCategory> AdvertisementCategorys { get; set; }
         public ICollection<AdvertisementPurpose> AdvertisementPurposes { get; set; }
         public ICollection<AdvertisementVolunteer> AdvertisementVolunteers { get; set; }
         public Organisation Organisation { get; set; }
+        public City City { get; set; }
     }
 }

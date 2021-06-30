@@ -24,18 +24,39 @@ namespace WebAPI.Controllers
     {
         private IAdvertisementService _adversimentService;
         private IOrganisationService _organisationService;
-        public AdvertisementController(IAdvertisementService adversimentService, IOrganisationService organisationService)
+        private IVolunteerService _volunteerService;
+        public AdvertisementController(IAdvertisementService adversimentService, IVolunteerService volunteerService, IOrganisationService organisationService)
         {
             _adversimentService = adversimentService;
+            _volunteerService = volunteerService;
             _organisationService = organisationService;
         }
 
         [HttpGet("GetList")]
         public ActionResult GetList([FromQuery] AdvertisementQuery advertisementQuery, [FromQuery] PaginationQuery paginationQuery)
         {
-            if (HttpContext.Session.GetInt32(SessionKeys.SessionKeyVolunteerId) != null)
-                advertisementQuery.VolunteerId = HttpContext.Session.GetInt32(SessionKeys.SessionKeyVolunteerId).Value;
+            var userID = User.Claims.Where(a => a.Type == ClaimTypes.NameIdentifier).FirstOrDefault().Value;
+            var volunteer = _volunteerService.GetVolunteer(Convert.ToInt32(userID));
+            if (volunteer.Data == null)
+            {
+                return BadRequest("STK bulunumadı!");
+            }
+
+
+            advertisementQuery.VolunteerId = volunteer.Data.VolunteerId;
             var result = _adversimentService.GetList(advertisementQuery, paginationQuery);
+            if (result.Success)
+            {
+                return Ok(result.Data);
+            }
+
+            return BadRequest(result.Message);
+        }
+        [HttpGet("GetAdvertisementDetail")]
+        public ActionResult GetAdvertisementDetail([FromQuery] int advertisementId)
+        {
+            var result = _adversimentService.GetAdvertisementDetail(advertisementId);
+
             if (result.Success)
             {
                 return Ok(result.Data);
@@ -49,13 +70,11 @@ namespace WebAPI.Controllers
         public ActionResult AddAdvertisement(AdvertisementDto advertisementDto)
         {
             var userID = User.Claims.Where(a => a.Type == ClaimTypes.NameIdentifier).FirstOrDefault().Value;
-           var organisation= _organisationService.GetOrganisation(Convert.ToInt32(userID));
-
+            var organisation= _organisationService.GetOrganisation(Convert.ToInt32(userID));
             if (organisation.Data == null)
             {
                 return BadRequest("STK bulunumadı!");
             }
-
             advertisementDto.OrganisationId = organisation.Data.OrganisationId;
             var result = _adversimentService.Add(advertisementDto);
             if (result.Success)

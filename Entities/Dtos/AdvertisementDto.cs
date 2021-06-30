@@ -17,5 +17,8 @@ namespace Entities.Dtos
         public bool IsOnline { get; set; }
         public List<int> CategoryIdList { get; set; }
         public List<int>  PurposeIdList{ get; set; }
+        public int CityId { get; set; }
+        public byte[] Image { get; set; }
+        public bool IsApplied { get; set; }
     }
 }

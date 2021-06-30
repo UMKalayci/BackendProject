@@ -52,6 +52,27 @@ namespace Business.Concrete
             int count = _advertisementDal.GetCount(adversimentQuery);
             return PaginationExtensions.CreatePaginationResult<List<AdvertisementListView>>(resultList, true, paginationQuery, count, _uriService);
         }
+
+        public IDataResult<AdvertisementDetailView> GetAdvertisementDetail(int advertisementId)
+        {
+            AdvertisementDetailView advertisementDetailView = new AdvertisementDetailView();
+
+           var advertisement= _advertisementDal.GetDetail(advertisementId);
+            advertisementDetailView.Name = advertisement.AdvertisementTitle;
+            advertisementDetailView.Description = advertisement.AdvertisementDesc;
+            advertisementDetailView.ApplicationEndDate = advertisement.AppEndDate;
+            advertisementDetailView.EndDate = advertisement.EndDate;
+            advertisementDetailView.StartDate = advertisement.StartDate;
+            advertisementDetailView.ApplicationStartDate = advertisement.AppStartDate;
+            advertisementDetailView.IsApplied = advertisement.IsApplied;
+            advertisementDetailView.Location = advertisement.City.CityName;
+            advertisementDetailView.ProjectImage = advertisement.Image;
+            advertisementDetailView.Purposes = advertisement.AdvertisementPurposes.Select(x=>x.Purpose.PurposeName).ToList();
+            advertisementDetailView.Categories = advertisement.AdvertisementCategorys.Select(x=>x.Category.CategoryName).ToList();
+            advertisementDetailView.Corporation = advertisement.Organisation.OrganisationName;
+            advertisementDetailView.ApplicantCount = advertisement.AdvertisementVolunteers.Count;
+            return new SuccessDataResult<AdvertisementDetailView>(advertisementDetailView);
+        }
         public IDataResult<int> Add(AdvertisementDto advertisementDto)
         {
             if (advertisementDto.OrganisationId != 0 &&
@@ -60,7 +81,8 @@ namespace Business.Concrete
                 advertisementDto.AdvertisementTitle != null &&
                 advertisementDto.AdvertisementDesc != null &&
                 advertisementDto.AppStartDate != DateTime.MinValue &&
-                advertisementDto.AppEndDate != DateTime.MinValue 
+                advertisementDto.AppEndDate != DateTime.MinValue &&
+                advertisementDto.CityId !=0
                 )
             {
                 try
@@ -74,6 +96,9 @@ namespace Business.Concrete
                     advertisement.EndDate = advertisementDto.EndDate;
                     advertisement.AppEndDate = advertisementDto.AppEndDate;
                     advertisement.AppStartDate = advertisementDto.AppStartDate;
+                    advertisement.CityId = advertisementDto.CityId;
+                    advertisement.IsApplied = advertisementDto.IsApplied;
+                    advertisement.Image = advertisementDto.Image;
                     advertisement.InsertDate = now;
                     advertisement.UpdateDate = now;
                     advertisement.Status = false;

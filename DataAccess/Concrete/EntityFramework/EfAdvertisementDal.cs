@@ -14,7 +14,20 @@ namespace DataAccess.Concrete.EntityFramework
 {
     public class EfAdvertisementDal : EfEntityRepositoryBase<Advertisement, EGonulluContext>, IAdvertisementDal
     {
+        public Advertisement GetDetail(int advertisementId)
+        {
+            using (var context = new EGonulluContext())
+            {
+              var advertisement= context.Advertisements.Where(x => x.AdvertisementId == advertisementId)
+                                        .Include(x=>x.AdvertisementCategorys).ThenInclude(x=>x.Category)
+                                        .Include(x=>x.AdvertisementPurposes).ThenInclude(x=>x.Purpose)
+                                        .Include(x=>x.City)
+                                        .Include(x=>x.Organisation)
+                                        .Include(x=>x.AdvertisementVolunteers).FirstOrDefault();
 
+                return advertisement;
+            }
+        }
         public IEnumerable<Advertisement> GetList(AdvertisementQuery filter = null, PaginationQuery paginationQuery = null)
         {
             using (var context = new EGonulluContext())
@@ -31,10 +44,10 @@ namespace DataAccess.Concrete.EntityFramework
                 {
                     var query = context.Advertisements.Where(x => 1 == 1);
 
-                    if(filter.CategoryId!=0)
-                    query = query.Where(x => x.AdvertisementCategorys.Any(y=>y.CategoryId==filter.CategoryId));
-                    if(filter.PurposeId!=0)
-                    query = query.Where(x => x.AdvertisementPurposes.Any(y=>y.PurposeId==filter.PurposeId));
+                    if (filter.CategoryId != 0)
+                        query = query.Where(x => x.AdvertisementCategorys.Any(y => y.CategoryId == filter.CategoryId));
+                    if (filter.PurposeId != 0)
+                        query = query.Where(x => x.AdvertisementPurposes.Any(y => y.PurposeId == filter.PurposeId));
 
 
                     query = query.Include(x => x.Organisation);
