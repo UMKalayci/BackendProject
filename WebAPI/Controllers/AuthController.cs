@@ -1,11 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Security.Claims;
+using System.Text;
 using System.Threading.Tasks;
 using Business.Abstract;
 using Entities.Dtos;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 using WebAPI.Constants;
 
 namespace WebAPI.Controllers
@@ -44,6 +49,10 @@ namespace WebAPI.Controllers
             else if (userForLoginDto.Type == 2)
             {
                 var organisation = _organisationService.GetOrganisation(userToLogin.Data.Id);
+                if (organisation.Data != null && organisation.Data.Status == false)
+                {
+                    return BadRequest("Hesabınızın onaylanmasını bekleyiniz!");
+                }
                 if (!organisation.Success)
                 {
                     return BadRequest(organisation.Message);
@@ -52,32 +61,52 @@ namespace WebAPI.Controllers
             var result = _authService.CreateAccessToken(userToLogin.Data);
             if (result.Success)
             {
-                HttpContext.Session.SetInt32(SessionKeys.SessionKeyUserId, userToLogin.Data.Id);
-                HttpContext.Session.SetInt32(SessionKeys.SessionType, userForLoginDto.Type);
                 return Ok(result.Data);
             }
 
             return BadRequest(result.Message);
         }
-
-        [HttpPost("mailauth")]
-        public ActionResult MailAuth(UserMailAuthDto userMailAuthDto)
+        [HttpGet("ConfirmEmail")]
+        public IActionResult ConfirmEmail([FromQuery] string token, [FromQuery] string email)
         {
-            var userExists = _authService.UserExists(userMailAuthDto.Email);
-            if (!userExists.Success)
-            {
-                return BadRequest(userExists.Message);
-            }
+            if(ValidateJwtToken(token)!=email)
+                return View("Error");
+            var user =  _authService.FindByEmail(email);
+            if (user == null)
+                return View("Error");
 
-            var registerResult = _authService.MailConfirmation(userMailAuthDto);
-            if (registerResult.Success)
-            {
-                return Ok(registerResult.Data);
-            }
-
-            return BadRequest(registerResult.Message);
+            var result = _authService.ConfirmEmail(email);
+            return View(result.Success ? "ConfirmEmail" : "Error");
         }
 
+       public string ValidateJwtToken(string token)
+        {
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var key = Encoding.ASCII.GetBytes("mysecretkeymysecretkey");
+            try
+            {
+                tokenHandler.ValidateToken(token, new TokenValidationParameters
+                {
+                    ValidateIssuerSigningKey = true,
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidIssuer = "www.egonullu.com",
+                    ValidAudience = "www.egonullu.com",
+                    IssuerSigningKey = new SymmetricSecurityKey(key),
+                }, out SecurityToken validatedToken);
+
+                var jwtToken = (JwtSecurityToken)validatedToken;
+                var email = jwtToken.Claims.First(x => x.Type == "email").Value.ToString();
+
+                // return account id from JWT token if validation successful
+                return email;
+            }
+            catch
+            {
+                // return null if validation fails
+                return null;
+            }
+        }
         //[HttpPost("register")]
         //public ActionResult Register(UserForRegisterDto userForRegisterDto)
         //{

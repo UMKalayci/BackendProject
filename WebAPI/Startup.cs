@@ -4,6 +4,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Core.DependencyResolvers;
+using Core.Entities.Concrete;
 using Core.Extensions;
 using Core.Utilities.IoC;
 using Core.Utilities.Security.Encyption;
@@ -41,6 +42,14 @@ namespace WebAPI
 
             services.AddControllers();
 
+            services.AddIdentity<User, Microsoft.AspNetCore.Identity.IdentityRole>(opt =>
+            {
+                opt.Password.RequiredLength = 7;
+                opt.Password.RequireDigit = false;
+                opt.Password.RequireUppercase = false;
+                opt.User.RequireUniqueEmail = true;
+                opt.SignIn.RequireConfirmedEmail = true;
+            });
             var tokenOptions = Configuration.GetSection("TokenOptions").Get<TokenOptions>();
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -62,6 +71,7 @@ namespace WebAPI
             {
                 options.AddPolicy("OrganisationOnly", policy => policy.RequireClaim(ClaimTypes.Role, "STK"));
                 options.AddPolicy("VolunteerOnly", policy => policy.RequireClaim(ClaimTypes.Role, "Gönüllü"));
+                options.AddPolicy("AdminOnly", policy => policy.RequireClaim(ClaimTypes.Role, "Admin"));
             });
             services.AddControllersWithViews()
                     .AddNewtonsoftJson(options =>

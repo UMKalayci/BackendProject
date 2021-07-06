@@ -44,8 +44,6 @@ namespace WebAPI.Controllers
 
                 if (result.Success)
                 {
-                    //HttpContext.Session.SetInt32(SessionKeys.SessionKeyUserId, registerResult.Data.User.Id);
-                    //HttpContext.Session.SetInt32(SessionKeys.SessionKeyOrganisationId, registerResult.Data.OrganisationId);
                     return Ok(result.Data);
                 }
                 return BadRequest(result.Message);

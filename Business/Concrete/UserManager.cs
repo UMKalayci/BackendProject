@@ -29,6 +29,10 @@ namespace Business.Concrete
             _userDal.Add(user);
         }
 
+        public void Update(User user)
+        {
+            _userDal.Update(user);
+        }
 
         public void AddUserClaims(UserOperationClaim userOperationClaim)
         {

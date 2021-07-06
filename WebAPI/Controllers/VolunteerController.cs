@@ -4,11 +4,13 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Business.Abstract;
+using Core.Entities.Concrete;
 using Core.Extensions;
 using Entities.Concrete;
 using Entities.Dtos;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using WebAPI.Constants;
 
@@ -20,11 +22,15 @@ namespace WebAPI.Controllers
     {
         private IVolunteerService _volunteerService;
         private IAuthService _authService;
+        private IEmailHelper _emailHelper;
 
-        public VolunteerController(IVolunteerService volunteerService, IAuthService authService)
+
+        public VolunteerController(IVolunteerService volunteerService, IEmailHelper emailHelper, IAuthService authService)
         {
             _volunteerService = volunteerService;
             _authService = authService;
+            _emailHelper = emailHelper;
+
         }
 
         [HttpPost("register")]
@@ -41,13 +47,15 @@ namespace WebAPI.Controllers
             {
                 var result = _authService.CreateAccessToken(registerResult.Data.User);
 
-                if (result.Success)
+                var confirmationLink = Url.Action("ConfirmEmail", "Auth", new { result.Data.Token, email = registerResult.Data.User.Email }, Request.Scheme);
+
+                var emailResponse = _emailHelper.MailConfirmation(registerResult.Data.User.Email, confirmationLink);
+
+                if (emailResponse.Success)
                 {
-                    //HttpContext.Session.SetInt32(SessionKeys.SessionKeyUserId, registerResult.Data.User.Id);
-                    //HttpContext.Session.SetInt32(SessionKeys.SessionKeyVolunteerId, registerResult.Data.VolunteerId);
-                    return Ok(result.Data);
+                    return Ok();
                 }
-                return BadRequest(result.Message);
+                return BadRequest(emailResponse.Message);
             }
 
             return BadRequest(registerResult.Message);

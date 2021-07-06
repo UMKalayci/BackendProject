@@ -53,45 +53,14 @@ namespace Business.Concrete
             {
                 return new ErrorDataResult<User>(Messages.PasswordError);
             }
-
+            if (!userToCheck.EMailConfirmed)
+            {
+                return new ErrorDataResult<User>(Messages.MailConfirmError);
+            }
             return new SuccessDataResult<User>(userToCheck, Messages.SuccessfulLogin);
         }
 
-        public IDataResult<string> MailConfirmation(UserMailAuthDto userMailAuthDto)
-        {
-            var fromAddress = new MailAddress("bmugurmutlukalayci@gmail.com", "Uğur Mutlu KALAYCI");
-            var toAddress = new MailAddress("fufahrettinuygun@gmail.com", "Fahrettin Uygun");
-            const string fromPassword = "Qazwsx112++";
-            const string subject = "E Gönüllü Kayıt Onay Kodu";
-            int onay = new Random().Next(1000, 9999);
-            string body = "Onay Kodunuz : " + onay.ToString();
 
-            try
-            {
-                var smtp = new SmtpClient
-                {
-                    Host = "smtp.gmail.com",
-                    Port = 587,
-                    EnableSsl = true,
-                    DeliveryMethod = SmtpDeliveryMethod.Network,
-                    UseDefaultCredentials = true,
-                    Credentials = new NetworkCredential(fromAddress.Address, fromPassword)
-                };
-                using (var message = new MailMessage(fromAddress, toAddress)
-                {
-                    Subject = subject,
-                    Body = body
-                })
-                {
-                    smtp.Send(message);
-                }
-                return new SuccessDataResult<string>(onay.ToString(),Messages.MailSuccess);
-            }
-            catch(Exception ex)
-            {
-                return new ErrorDataResult<string>(Messages.MailError);
-            }
-        }
         public IResult UserExists(string email)
         {
             if (_userService.GetByMail(email) != null)
@@ -99,6 +68,31 @@ namespace Business.Concrete
                 return new ErrorResult(Messages.UserAlreadyExists);
             }
             return new SuccessResult();
+        }
+        public IDataResult<User> FindByEmail(string email)
+        {
+            var user = _userService.GetByMail(email);
+            if (user == null)
+            {
+                return new ErrorDataResult<User>(Messages.UserNotFound);
+            }
+            return new SuccessDataResult<User>(user);
+        }
+
+        public IResult ConfirmEmail(string email)
+        {
+            try
+            {
+                var user = _userService.GetByMail(email);
+                user.EMailConfirmed = true;
+                _userService.Update(user);
+
+                return new SuccessResult("Mail onaylandı.");
+            }
+            catch
+            {
+                return new ErrorResult("Mail onaylanamadı");
+            }
         }
 
         public IDataResult<AccessToken> CreateAccessToken(User user)

@@ -10,7 +10,8 @@ namespace Business.Abstract
 {
     public interface IAuthService
     {
-        IDataResult<string> MailConfirmation(UserMailAuthDto userMailAuthDto);
+        IResult ConfirmEmail(string email);
+        IDataResult<User> FindByEmail(string email);
         IDataResult<User> Register(UserForRegisterDto userForRegisterDto, string password);
         IDataResult<User> Login(UserForLoginDto userForLoginDto);
         IResult UserExists(string email);
