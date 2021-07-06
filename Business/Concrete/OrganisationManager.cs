@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading;
 using Business.Abstract;
 using Business.BusinessAspects.Autofac;
+using Business.BusinessAspects.Pagination;
 using Business.Constants;
 using Business.ValidationRules.FluentValidation;
 using Core.Aspects.Autofac.Caching;
@@ -22,6 +23,7 @@ using DataAccess.Abstract;
 using DataAccess.Concrete.EntityFramework;
 using Entities.Concrete;
 using Entities.Dtos;
+using Entities.QueryModels;
 using Entities.Views;
 using FluentValidation;
 using Microsoft.AspNetCore.Http;
@@ -30,14 +32,16 @@ namespace Business.Concrete
 {
     public class OrganisationManager : IOrganisationService
     {
+        protected readonly IPaginationUriService _uriService;
         private IUserService _userService;
         private IVolunteerAdvertisementComplatedDal _volunteerAdvertisementComplatedDal;
         private IOrganisationDal _organisationDal;
         private IAdvertisementVolunteerDal _advertisementVolunteerDal;
         private IAdvertisementDal _advertisementDal;
 
-        public OrganisationManager(IUserService userService, IVolunteerAdvertisementComplatedDal volunteerAdvertisementComplatedDal, IAdvertisementVolunteerDal advertisementVolunteerDal, IAdvertisementDal advertisementDal, IOrganisationDal organisationDal)
+        public OrganisationManager(IPaginationUriService uriService, IUserService userService, IVolunteerAdvertisementComplatedDal volunteerAdvertisementComplatedDal, IAdvertisementVolunteerDal advertisementVolunteerDal, IAdvertisementDal advertisementDal, IOrganisationDal organisationDal)
         {
+            _uriService = uriService;
             _userService = userService;
             _organisationDal = organisationDal;
             _advertisementDal = advertisementDal;
@@ -45,6 +49,29 @@ namespace Business.Concrete
 
             _advertisementVolunteerDal = advertisementVolunteerDal;
         }
+
+        public IPaginationResult<List<OrganisationApproveListView>> GetApproveList(OrganisationListQuery organisationListQuery, PaginationQuery paginationQuery = null)
+        {
+            var list = _organisationDal.GetApproveList(organisationListQuery, paginationQuery).ToList();
+            List<OrganisationApproveListView> resultList = new List<OrganisationApproveListView>();
+            foreach (var item in list)
+            {
+                resultList.Add(new OrganisationApproveListView()
+                {
+                    City = item.City.CityName,
+                    Desc = item.Desc,
+                    FoundationOfYear = item.FoundationOfYear,
+                    IsMemberAcikAcik = item.IsMemberAcikAcik,
+                    OrganisationId = item.OrganisationId,
+                    OrganisationName = item.OrganisationName,
+                    Phone = item.Phone,
+                    Status=item.Status
+                });
+            };
+            int count = _organisationDal.GetApproveCount(organisationListQuery);
+            return PaginationExtensions.CreatePaginationResult<List<OrganisationApproveListView>>(resultList, true, paginationQuery, count, _uriService);
+        }
+
         public IDataResult<Organisation> GetOrganisation(int userId)
         {
             var organisation = _organisationDal.Get(x => x.UserId == userId);
@@ -89,7 +116,7 @@ namespace Business.Concrete
                     OrganisationName = organisationForRegisterDto.OrganisationName,
                     UpdateDate = DateTime.Now,
                     InsertDate = DateTime.Now,
-                    Status = true
+                    Status = false
                 };
 
                 _organisationDal.Add(organisation);

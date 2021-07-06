@@ -1,6 +1,7 @@
 ﻿using Core.Utilities.Results;
 using Entities.Concrete;
 using Entities.Dtos;
+using Entities.QueryModels;
 using Entities.Views;
 using System;
 using System.Collections.Generic;
@@ -10,6 +11,7 @@ namespace Business.Abstract
 {
     public interface IOrganisationService
     {
+        IPaginationResult<List<OrganisationApproveListView>> GetApproveList(OrganisationListQuery organisationListQuery, PaginationQuery paginationQuery = null);
         IDataResult<Organisation> GetOrganisation(int userId);
         IResult UserExists(string email);
         IResult ComplatedAdvertisementApprove(VolunteerAdvertisementComplatedApproveDto volunteerAdvertisementComplatedApproveDto);

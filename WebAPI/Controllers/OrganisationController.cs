@@ -1,19 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IdentityModel.Tokens.Jwt;
+﻿using Business.Abstract;
+using Entities.Dtos;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Linq;
 using System.Security.Claims;
-using System.Threading.Tasks;
-using Business.Abstract;
-using Business.Constants;
-using Core.Extensions;
-using Entities.Concrete;
-using Entities.Dtos;
-using Entities.QueryModels;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using WebAPI.Constants;
 
 namespace WebAPI.Controllers
 {
