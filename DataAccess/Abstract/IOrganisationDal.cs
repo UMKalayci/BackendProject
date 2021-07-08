@@ -9,7 +9,7 @@ namespace DataAccess.Abstract
 {
     public interface IOrganisationDal : IEntityRepository<Organisation>
     {
-        IEnumerable<Organisation> GetApproveList(OrganisationListQuery filter = null, PaginationQuery paginationQuery = null);
-        int GetApproveCount(OrganisationListQuery filter = null);
+        IEnumerable<Organisation> GetApproveList(AdminOrganisationListQuery filter = null, PaginationQuery paginationQuery = null);
+        int GetApproveCount(AdminOrganisationListQuery filter = null);
     }
 }

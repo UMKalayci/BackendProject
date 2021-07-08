@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Entities.QueryModels
 {
-    public class OrganisationListQuery
+    public class AdminAdvertisementApproveQuery
     {
         public string OrganisationName { get; set; }
     }

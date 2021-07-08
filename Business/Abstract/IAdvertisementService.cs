@@ -12,7 +12,9 @@ namespace Business.Abstract
     public interface IAdvertisementService
     {
         IPaginationResult<List<AdvertisementListView>> GetList(AdvertisementQuery adversimentQuery, PaginationQuery paginationQuery = null);
+        IPaginationResult<List<AdvertisementListView>> GetApproveList(AdminAdvertisementApproveQuery adversimentQuery, PaginationQuery paginationQuery = null);
         IDataResult<AdvertisementDetailView> GetAdvertisementDetail(int advertisementId);
         IDataResult<int> Add(AdvertisementDto advertisementDto);
+        IResult ApproveAdvertisement(int advertisementId);
     }
 }

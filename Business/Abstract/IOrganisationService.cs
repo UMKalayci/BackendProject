@@ -11,7 +11,8 @@ namespace Business.Abstract
 {
     public interface IOrganisationService
     {
-        IPaginationResult<List<OrganisationApproveListView>> GetApproveList(OrganisationListQuery organisationListQuery, PaginationQuery paginationQuery = null);
+        IResult ApproveOrganisation(int organisationId);
+        IPaginationResult<List<OrganisationApproveListView>> GetApproveList(AdminOrganisationListQuery organisationListQuery, PaginationQuery paginationQuery = null);
         IDataResult<Organisation> GetOrganisation(int userId);
         IResult UserExists(string email);
         IResult ComplatedAdvertisementApprove(VolunteerAdvertisementComplatedApproveDto volunteerAdvertisementComplatedApproveDto);

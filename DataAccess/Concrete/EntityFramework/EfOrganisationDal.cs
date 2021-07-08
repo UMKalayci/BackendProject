@@ -14,7 +14,7 @@ namespace DataAccess.Concrete.EntityFramework
 {
     public class EfOrganisationDal : EfEntityRepositoryBase<Organisation, EGonulluContext>, IOrganisationDal
     {
-        public IEnumerable<Organisation> GetApproveList(OrganisationListQuery filter = null, PaginationQuery paginationQuery = null)
+        public IEnumerable<Organisation> GetApproveList(AdminOrganisationListQuery filter = null, PaginationQuery paginationQuery = null)
         {
             using (var context = new EGonulluContext())
             {
@@ -46,7 +46,7 @@ namespace DataAccess.Concrete.EntityFramework
         }
 
 
-        public int GetApproveCount(OrganisationListQuery filter = null)
+        public int GetApproveCount(AdminOrganisationListQuery filter = null)
         {
             using (var context = new EGonulluContext())
             {

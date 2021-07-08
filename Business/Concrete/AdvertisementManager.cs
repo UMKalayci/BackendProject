@@ -20,7 +20,7 @@ namespace Business.Concrete
         private IAdvertisementCategoryDal _advertisementCategoryDal;
         private IAdvertisementPurposeDal _advertisementPurposeDal;
         private IVolunteerDal _volunteerDal;
-        public AdvertisementManager( IPaginationUriService uriService, IVolunteerDal volunteerDal, IAdvertisementDal advertisementDal, IAdvertisementCategoryDal advertisementCategoryDal, IAdvertisementPurposeDal advertisementPurposeDal)
+        public AdvertisementManager(IPaginationUriService uriService, IVolunteerDal volunteerDal, IAdvertisementDal advertisementDal, IAdvertisementCategoryDal advertisementCategoryDal, IAdvertisementPurposeDal advertisementPurposeDal)
         {
             _uriService = uriService;
             _advertisementDal = advertisementDal;
@@ -45,11 +45,34 @@ namespace Business.Concrete
                     IsOnline = item.IsOnline,
                     OrganisationId = item.OrganisationId,
                     OrganisationName = item.Organisation.OrganisationName,
-                    Record=volunteerAdvertisementList.Any(x=>x.AdvertisementId==item.AdvertisementId)
+                    Record = volunteerAdvertisementList.Any(x => x.AdvertisementId == item.AdvertisementId)
                 }
                 );
             };
             int count = _advertisementDal.GetCount(adversimentQuery);
+            return PaginationExtensions.CreatePaginationResult<List<AdvertisementListView>>(resultList, true, paginationQuery, count, _uriService);
+        }
+        public IPaginationResult<List<AdvertisementListView>> GetApproveList(AdminOrganisationListQuery adversimentQuery, PaginationQuery paginationQuery = null)
+        {
+            var list = _advertisementDal.GetApproveList(adversimentQuery, paginationQuery).ToList();
+            List<AdvertisementListView> resultList = new List<AdvertisementListView>();
+            foreach (var item in list)
+            {
+                resultList.Add(new AdvertisementListView()
+                {
+                    AdvertisementId = item.AdvertisementId,
+                    AdvertisementTitle = item.AdvertisementTitle,
+                    AdvertisementDesc = item.AdvertisementDesc,
+                    StartDate = item.StartDate,
+                    EndDate = item.EndDate,
+                    IsOnline = item.IsOnline,
+                    OrganisationId = item.OrganisationId,
+                    OrganisationName = item.Organisation.OrganisationName,
+                    Status = item.Status
+                }
+                );
+            };
+            int count = _advertisementDal.GetApproveCount(adversimentQuery);
             return PaginationExtensions.CreatePaginationResult<List<AdvertisementListView>>(resultList, true, paginationQuery, count, _uriService);
         }
 
@@ -57,7 +80,7 @@ namespace Business.Concrete
         {
             AdvertisementDetailView advertisementDetailView = new AdvertisementDetailView();
 
-           var advertisement= _advertisementDal.GetDetail(advertisementId);
+            var advertisement = _advertisementDal.GetDetail(advertisementId);
             advertisementDetailView.Name = advertisement.AdvertisementTitle;
             advertisementDetailView.Description = advertisement.AdvertisementDesc;
             advertisementDetailView.ApplicationEndDate = advertisement.AppEndDate;
@@ -67,8 +90,8 @@ namespace Business.Concrete
             advertisementDetailView.IsApplied = advertisement.IsApplied;
             advertisementDetailView.Location = advertisement.City.CityName;
             advertisementDetailView.ProjectImage = advertisement.Image;
-            advertisementDetailView.Purposes = advertisement.AdvertisementPurposes.Select(x=>x.Purpose.PurposeName).ToList();
-            advertisementDetailView.Categories = advertisement.AdvertisementCategorys.Select(x=>x.Category.CategoryName).ToList();
+            advertisementDetailView.Purposes = advertisement.AdvertisementPurposes.Select(x => x.Purpose.PurposeName).ToList();
+            advertisementDetailView.Categories = advertisement.AdvertisementCategorys.Select(x => x.Category.CategoryName).ToList();
             advertisementDetailView.Corporation = advertisement.Organisation.OrganisationName;
             advertisementDetailView.ApplicantCount = advertisement.AdvertisementVolunteers.Count;
             return new SuccessDataResult<AdvertisementDetailView>(advertisementDetailView);
@@ -82,7 +105,7 @@ namespace Business.Concrete
                 advertisementDto.AdvertisementDesc != null &&
                 advertisementDto.AppStartDate != DateTime.MinValue &&
                 advertisementDto.AppEndDate != DateTime.MinValue &&
-                advertisementDto.CityId !=0
+                advertisementDto.CityId != 0
                 )
             {
                 try
@@ -139,6 +162,25 @@ namespace Business.Concrete
                 return new ErrorDataResult<int>(-1, Messages.MissingFieldError);
 
             }
+        }
+        public IResult ApproveAdvertisement(int advertisementId)
+        {
+            var advertisement = _advertisementDal.Get(x => x.AdvertisementId == advertisementId);
+            if (advertisement != null)
+            {
+                try
+                {
+                    advertisement.Status = true;
+                    advertisement.UpdateDate = DateTime.Now;
+                    _advertisementDal.Update(advertisement);
+                    return new SuccessResult(Messages.SuccessAdded);
+                }
+                catch 
+                {
+                    return new ErrorResult(Messages.ErrorAdded);
+                }
+            }
+            return new ErrorResult(Messages.ErrorAdded);
         }
     }
 }

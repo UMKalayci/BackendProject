@@ -50,7 +50,7 @@ namespace Business.Concrete
             _advertisementVolunteerDal = advertisementVolunteerDal;
         }
 
-        public IPaginationResult<List<OrganisationApproveListView>> GetApproveList(OrganisationListQuery organisationListQuery, PaginationQuery paginationQuery = null)
+        public IPaginationResult<List<OrganisationApproveListView>> GetApproveList(AdminOrganisationListQuery organisationListQuery, PaginationQuery paginationQuery = null)
         {
             var list = _organisationDal.GetApproveList(organisationListQuery, paginationQuery).ToList();
             List<OrganisationApproveListView> resultList = new List<OrganisationApproveListView>();
@@ -180,6 +180,26 @@ namespace Business.Concrete
                 return new ErrorResult(Messages.UserAlreadyExists);
             }
             return new SuccessResult();
+        }
+
+        public IResult ApproveOrganisation(int organisationId)
+        {
+            var organisation = _organisationDal.Get(x => x.OrganisationId == organisationId);
+            if (organisation != null)
+            {
+                try
+                {
+                    organisation.Status = true;
+                    organisation.UpdateDate = DateTime.Now;
+                    _organisationDal.Update(organisation);
+                    return new SuccessResult(Messages.SuccessAdded);
+                }
+                catch
+                {
+                    return new ErrorResult(Messages.ErrorAdded);
+                }
+            }
+            return new ErrorResult(Messages.ErrorAdded);
         }
     }
 }
