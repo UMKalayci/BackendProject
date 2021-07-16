@@ -15,5 +15,7 @@ namespace Entities.Concrete
         public int VolunteerId { get; set; }
         public Volunteer Volunteer { get; set; }
         public Advertisement Advertisement { get; set; }
+        public ICollection<VolunteerAdvertisementComplated> VolunteerAdvertisementComplateds { get; set; }
+
     }
 }

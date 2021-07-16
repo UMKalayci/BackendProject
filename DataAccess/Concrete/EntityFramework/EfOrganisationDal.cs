@@ -14,6 +14,33 @@ namespace DataAccess.Concrete.EntityFramework
 {
     public class EfOrganisationDal : EfEntityRepositoryBase<Organisation, EGonulluContext>, IOrganisationDal
     {
+        public Organisation GetOrganisationDashboard(int organisationId)
+        {
+            using (var context = new EGonulluContext())
+            {
+                var query = context.Organisations.Where(x => x.OrganisationId == organisationId);
+                query = query.Where(x => x.Advertisements.Any(y => y.Status == true && y.EndDate>DateTime.Now));
+                query = query.Include(x => x.Advertisements);
+                query = query.Include(x => x.Advertisements)
+                    .ThenInclude(x => x.AdvertisementVolunteers);
+                query = query.Include(x => x.Advertisements)
+                    .ThenInclude(x => x.AdvertisementPurposes);
+                query = query.Include(x => x.Advertisements)
+                    .ThenInclude(x => x.AdvertisementPurposes)
+                    .ThenInclude(x=>x.Purpose);
+                query = query.Include(x => x.Advertisements)
+                    .ThenInclude(x => x.AdvertisementCategorys);
+                query = query.Include(x => x.Advertisements)
+                    .ThenInclude(x => x.AdvertisementCategorys)
+                    .ThenInclude(x=>x.Category);
+                query = query.Include(x => x.Advertisements)
+                    .ThenInclude(x => x.AdvertisementVolunteers);
+                query = query.Include(x => x.Advertisements)
+                    .ThenInclude(x => x.AdvertisementVolunteers)
+                    .ThenInclude(x => x.VolunteerAdvertisementComplateds);
+                return query.FirstOrDefault();
+            }
+        }
         public IEnumerable<Organisation> GetApproveList(AdminOrganisationListQuery filter = null, PaginationQuery paginationQuery = null)
         {
             using (var context = new EGonulluContext())
@@ -31,7 +58,7 @@ namespace DataAccess.Concrete.EntityFramework
                     var query = context.Organisations.Where(x => 1 == 1);
 
                     if (filter.OrganisationName != null)
-                        query = query.Where(x => x.OrganisationName==filter.OrganisationName);
+                        query = query.Where(x => x.OrganisationName == filter.OrganisationName);
 
 
                     query = query.Include(x => x.City);

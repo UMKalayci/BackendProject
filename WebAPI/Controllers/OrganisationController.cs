@@ -81,5 +81,23 @@ namespace WebAPI.Controllers
             }
             return BadRequest(result.Message);
         }
+
+        [Authorize(Policy = "OrganisationOnly")]
+        [HttpGet("GetOrganisationDashboard")]
+        public ActionResult GetOrganisationDashboard()
+        {
+            var userID = User.Claims.Where(a => a.Type == ClaimTypes.NameIdentifier).FirstOrDefault().Value;
+            var organisation = _organisationService.GetOrganisation(Convert.ToInt32(userID));
+            if (organisation.Data == null)
+            {
+                return BadRequest("STK bulunumadı!");
+            }
+            var result = _organisationService.GetOrganisationDashboard(organisation.Data.OrganisationId);
+            if (result.Success)
+            {
+                return Ok(result.Data);
+            }
+            return BadRequest(result.Message);
+        }
     }
 }

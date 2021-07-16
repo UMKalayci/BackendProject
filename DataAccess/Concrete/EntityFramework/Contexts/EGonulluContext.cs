@@ -40,6 +40,13 @@ namespace DataAccess.Concrete.EntityFramework.Contexts
             modelBuilder.Entity<GlobalPurpose>()
                 .HasKey(x => x.PurposeId);
 
+
+            modelBuilder.Entity<AdvertisementVolunteer>()
+                .HasKey(x => x.Id);
+
+            modelBuilder.Entity<VolunteerAdvertisementComplated>()
+                .HasKey(x => x.Id);
+
             modelBuilder.Entity<Volunteer>()
                 .HasOne(x => x.Company)
                 .WithMany(x => x.Volunteers)
@@ -104,9 +111,6 @@ namespace DataAccess.Concrete.EntityFramework.Contexts
                 .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<AdvertisementVolunteer>()
-                .HasKey(x => new { x.VolunteerId, x.AdvertisementId });
-
-            modelBuilder.Entity<AdvertisementVolunteer>()
                 .HasOne(x => x.Advertisement)
                 .WithMany(m => m.AdvertisementVolunteers)
                 .HasForeignKey(x => x.AdvertisementId)
@@ -117,7 +121,6 @@ namespace DataAccess.Concrete.EntityFramework.Contexts
                 .WithMany(m => m.AdvertisementVolunteers)
                 .HasForeignKey(x => x.VolunteerId)
                 .OnDelete(DeleteBehavior.Restrict);
-
 
             modelBuilder.Entity<OrganisationVolunteer>()
                 .HasKey(x => new { x.VolunteerId, x.OrganisationId });
@@ -136,8 +139,9 @@ namespace DataAccess.Concrete.EntityFramework.Contexts
 
             modelBuilder.Entity<VolunteerAdvertisementComplated>()
                 .HasOne(x => x.AdvertisementVolunteer)
-                .WithMany()
-                .HasPrincipalKey(x => x.Id);
+                .WithMany(x=>x.VolunteerAdvertisementComplateds)
+                .HasForeignKey(x=>x.AdvertisementVolunteerId)
+                .OnDelete(DeleteBehavior.Restrict);
         }
         public DbSet<OperationClaim> OperationClaims { get; set; }
         public DbSet<User> Users { get; set; }

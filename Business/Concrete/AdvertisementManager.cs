@@ -52,7 +52,7 @@ namespace Business.Concrete
             int count = _advertisementDal.GetCount(adversimentQuery);
             return PaginationExtensions.CreatePaginationResult<List<AdvertisementListView>>(resultList, true, paginationQuery, count, _uriService);
         }
-        public IPaginationResult<List<AdvertisementListView>> GetApproveList(AdminOrganisationListQuery adversimentQuery, PaginationQuery paginationQuery = null)
+        public IPaginationResult<List<AdvertisementListView>> GetApproveList(AdminAdvertisementApproveQuery adversimentQuery, PaginationQuery paginationQuery = null)
         {
             var list = _advertisementDal.GetApproveList(adversimentQuery, paginationQuery).ToList();
             List<AdvertisementListView> resultList = new List<AdvertisementListView>();

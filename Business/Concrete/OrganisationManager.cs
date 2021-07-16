@@ -50,6 +50,48 @@ namespace Business.Concrete
             _advertisementVolunteerDal = advertisementVolunteerDal;
         }
 
+        public IDataResult<OrganisationDashboardModel> GetOrganisationDashboard(int organisationId)
+        {
+            try
+            {
+                var organisationDetail = _organisationDal.GetOrganisationDashboard(organisationId);
+                OrganisationDashboardModel result = new OrganisationDashboardModel();
+                result.TotalActiveProjectCount = organisationDetail.Advertisements.Count();
+                result.TotalVolunteerCount = organisationDetail.Advertisements.Sum(x => x.AdvertisementVolunteers.Count);
+                result.TotalVolunteerWorkCount = organisationDetail.Advertisements.Sum(x => x.AdvertisementVolunteers.Sum(y => y.VolunteerAdvertisementComplateds.Sum(z => z.TotalWork)));
+                Dictionary<string, int> purposeList = new Dictionary<string, int>();
+                foreach (var item in organisationDetail.Advertisements.SelectMany(x=>x.AdvertisementPurposes.Select(y=>y.Purpose.PurposeName)).ToList())
+                {
+                    if (purposeList.Any(x => x.Key == item))
+                    {
+                        purposeList[item] += 1;
+                    }
+                    else
+                    {
+                        purposeList[item] = 1;
+                    }
+                }
+                Dictionary<string, int> categoryList = new Dictionary<string, int>();
+                foreach (var item in organisationDetail.Advertisements.SelectMany(x => x.AdvertisementCategorys.Select(y => y.Category.CategoryName)).ToList())
+                {
+                    if (categoryList.Any(x => x.Key == item))
+                    {
+                        categoryList[item] += 1;
+                    }
+                    else
+                    {
+                        categoryList[item] = 1;
+                    }
+                }
+                result.PurposeCount = purposeList;
+                result.CategoryCount = categoryList;
+                return new SuccessDataResult<OrganisationDashboardModel>(result);
+            }
+            catch (Exception hata)
+            {
+                return new ErrorDataResult<OrganisationDashboardModel>(null, Messages.Error);
+            }
+        }
         public IPaginationResult<List<OrganisationApproveListView>> GetApproveList(AdminOrganisationListQuery organisationListQuery, PaginationQuery paginationQuery = null)
         {
             var list = _organisationDal.GetApproveList(organisationListQuery, paginationQuery).ToList();
@@ -65,7 +107,7 @@ namespace Business.Concrete
                     OrganisationId = item.OrganisationId,
                     OrganisationName = item.OrganisationName,
                     Phone = item.Phone,
-                    Status=item.Status
+                    Status = item.Status
                 });
             };
             int count = _organisationDal.GetApproveCount(organisationListQuery);
@@ -163,11 +205,11 @@ namespace Business.Concrete
             {
                 resultList.Add(new ApproveListView()
                 {
-                    AdvertisementName=item.AdvertisementVolunteer.Advertisement.AdvertisementTitle,
-                    VolunteerName=item.AdvertisementVolunteer.Volunteer.User.FirstName + " " +item.AdvertisementVolunteer.Volunteer.User.LastName,
-                    ConfirmationStatus=item.ConfirmationStatus,
-                    TotalWork=item.TotalWork,
-                    ComplatedId=item.Id
+                    AdvertisementName = item.AdvertisementVolunteer.Advertisement.AdvertisementTitle,
+                    VolunteerName = item.AdvertisementVolunteer.Volunteer.User.FirstName + " " + item.AdvertisementVolunteer.Volunteer.User.LastName,
+                    ConfirmationStatus = item.ConfirmationStatus,
+                    TotalWork = item.TotalWork,
+                    ComplatedId = item.Id
                 });
             }
 
