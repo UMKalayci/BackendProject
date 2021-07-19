@@ -11,6 +11,8 @@ namespace DataAccess.Abstract
     {
         Organisation GetOrganisationDashboard(int organisationId);
         IEnumerable<Organisation> GetApproveList(AdminOrganisationListQuery filter = null, PaginationQuery paginationQuery = null);
+        IEnumerable<Volunteer> GetOrganisationVolunteerList(int organisationId, PaginationQuery paginationQuery = null);
         int GetApproveCount(AdminOrganisationListQuery filter = null);
+        int GetOrganisationVolunteerCount(int organisationId);
     }
 }

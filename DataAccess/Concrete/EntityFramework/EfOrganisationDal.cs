@@ -14,6 +14,7 @@ namespace DataAccess.Concrete.EntityFramework
 {
     public class EfOrganisationDal : EfEntityRepositoryBase<Organisation, EGonulluContext>, IOrganisationDal
     {
+
         public Organisation GetOrganisationDashboard(int organisationId)
         {
             using (var context = new EGonulluContext())
@@ -39,6 +40,31 @@ namespace DataAccess.Concrete.EntityFramework
                     .ThenInclude(x => x.AdvertisementVolunteers)
                     .ThenInclude(x => x.VolunteerAdvertisementComplateds);
                 return query.FirstOrDefault();
+            }
+        }
+
+        public IEnumerable<Volunteer> GetOrganisationVolunteerList(int organisationId, PaginationQuery paginationQuery = null)
+        {
+            using (var context = new EGonulluContext())
+            {
+                var query = context.Organisations.Where(x => x.OrganisationId == organisationId);
+
+                query.Include(x => x.OrganisationVolunteers)
+                    .ThenInclude(x => x.Volunteer);
+
+                query.Include(x => x.OrganisationVolunteers)
+                    .ThenInclude(x => x.Volunteer)
+                    .ThenInclude(x=>x.User);
+
+                query.Include(x => x.OrganisationVolunteers)
+                    .ThenInclude(x => x.Volunteer)
+                    .ThenInclude(x => x.City);
+                var result = query.SelectMany(x => x.OrganisationVolunteers.Select(y => y.Volunteer));
+                result = result.Distinct();
+                result = result.OrderByDescending(x => x.User.FirstName);
+                if (paginationQuery != null)
+                    result = result.Skip((paginationQuery.PageNumber - 1) * paginationQuery.PageSize).Take(paginationQuery.PageSize);
+                return result.ToList();
             }
         }
         public IEnumerable<Organisation> GetApproveList(AdminOrganisationListQuery filter = null, PaginationQuery paginationQuery = null)
@@ -91,6 +117,21 @@ namespace DataAccess.Concrete.EntityFramework
                     return query.Count();
                 }
 
+            }
+        }
+
+        public int GetOrganisationVolunteerCount(int organisationId)
+        {
+            using (var context = new EGonulluContext())
+            {
+                var query = context.Organisations.Where(x => x.OrganisationId == organisationId);
+
+                query.Include(x => x.OrganisationVolunteers)
+                    .ThenInclude(x => x.Volunteer);
+
+                var result = query.SelectMany(x => x.OrganisationVolunteers.Select(y => y.Volunteer));
+                result = result.Distinct();
+                return result.Count();
             }
         }
     }

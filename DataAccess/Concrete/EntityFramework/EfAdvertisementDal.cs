@@ -48,6 +48,13 @@ namespace DataAccess.Concrete.EntityFramework
                         query = query.Where(x => x.AdvertisementCategorys.Any(y => y.CategoryId == filter.CategoryId));
                     if (filter.PurposeId != 0)
                         query = query.Where(x => x.AdvertisementPurposes.Any(y => y.PurposeId == filter.PurposeId));
+                    if (filter.OrganisationId != 0)
+                        query = query.Where(x => x.OrganisationId==filter.OrganisationId);
+
+                    if (filter.Complated ==true)
+                        query = query.Where(x => x.EndDate<DateTime.Now);
+                    if (filter.Complated == false)
+                        query = query.Where(x => x.EndDate > DateTime.Now);
 
 
                     query = query.Include(x => x.Organisation);
@@ -103,10 +110,12 @@ namespace DataAccess.Concrete.EntityFramework
                 else
                 {
                     var query = context.Advertisements.Where(x => x.Status == true);
-
-                    query = query.Where(x => x.AdvertisementCategorys.Any(y => y.CategoryId == filter.CategoryId));
-                    query = query.Where(x => x.AdvertisementPurposes.Any(y => y.PurposeId == filter.PurposeId));
-
+                    if (filter.CategoryId != 0)
+                        query = query.Where(x => x.AdvertisementCategorys.Any(y => y.CategoryId == filter.CategoryId));
+                    if (filter.PurposeId != 0)
+                        query = query.Where(x => x.AdvertisementPurposes.Any(y => y.PurposeId == filter.PurposeId));
+                    if (filter.OrganisationId != 0)
+                        query = query.Where(x => x.OrganisationId == filter.OrganisationId);
 
                     return query.Count();
                 }

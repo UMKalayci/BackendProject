@@ -9,5 +9,7 @@ namespace Entities.QueryModels
         public int VolunteerId { get; set; }
         public int CategoryId { get; set; }
         public int PurposeId { get; set; }
+        public int OrganisationId { get; set; }
+        public bool? Complated { get; set; }
     }
 }

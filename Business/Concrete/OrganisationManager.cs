@@ -50,6 +50,34 @@ namespace Business.Concrete
             _advertisementVolunteerDal = advertisementVolunteerDal;
         }
 
+        public IPaginationResult<List<VolunteerListView>>  GetOrganisationVolunteerList(int organisationId, PaginationQuery paginationQuery = null)
+        {
+            try
+            {
+                var volunteerList = _organisationDal.GetOrganisationVolunteerList(organisationId);
+                List<VolunteerListView> resultList = new List<VolunteerListView>();
+                foreach (var item in volunteerList)
+                {
+                    resultList.Add(new VolunteerListView()
+                    {
+                        BirthDate=item.BirthDate,
+                        CityName=item.City.CityName,
+                        Gender=item.Gender,
+                        NameSurname=item.User.FirstName+" "+item.User.LastName,
+                        Phone=item.Phone,
+                        VolunteerId=item.VolunteerId
+                    });;
+                }
+                int count = _organisationDal.GetOrganisationVolunteerCount(organisationId);
+                return PaginationExtensions.CreatePaginationResult<List<VolunteerListView>>(resultList, true, paginationQuery, count, _uriService);
+            }
+            catch (Exception hata)
+            {
+                return null;
+            }
+        }
+
+
         public IDataResult<OrganisationDashboardModel> GetOrganisationDashboard(int organisationId)
         {
             try

@@ -1,5 +1,7 @@
 ﻿using Business.Abstract;
+using Business.Constants;
 using Entities.Dtos;
+using Entities.QueryModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -13,11 +15,13 @@ namespace WebAPI.Controllers
     public class OrganisationController : ControllerBase
     {
         private IOrganisationService _organisationService;
+        private IAdvertisementService _advertisementService;
         private IAuthService _authService;
-        public OrganisationController(IOrganisationService organisationService, IAuthService authService)
+        public OrganisationController(IAdvertisementService advertisementService, IOrganisationService organisationService, IAuthService authService)
         {
             _organisationService = organisationService;
             _authService = authService;
+            _advertisementService = advertisementService;
         }
         [HttpPost("register")]
         public ActionResult Register(OrganisationForRegisterDto organisationForRegisterDto)
@@ -98,6 +102,59 @@ namespace WebAPI.Controllers
                 return Ok(result.Data);
             }
             return BadRequest(result.Message);
+        }
+        [Authorize(Policy = "OrganisationOnly")]
+        [HttpGet("GetOrganisationVolunteerList")]
+        public ActionResult GetOrganisationVolunteerList([FromQuery] PaginationQuery paginationQuery)
+        {
+            var userID = User.Claims.Where(a => a.Type == ClaimTypes.NameIdentifier).FirstOrDefault().Value;
+            var organisation = _organisationService.GetOrganisation(Convert.ToInt32(userID));
+            if (organisation.Data == null)
+            {
+                return BadRequest("STK bulunumadı!");
+            }
+            var result = _organisationService.GetOrganisationVolunteerList(organisation.Data.OrganisationId, paginationQuery);
+            if (result != null)
+            {
+                return Ok(result.Data);
+            }
+            return BadRequest(Messages.Error);
+        }
+
+        [Authorize(Policy = "OrganisationOnly")]
+        [HttpGet("GetOrganisationAdvertisementList")]
+        public ActionResult GetOrganisationAdvertisementList([FromQuery] PaginationQuery paginationQuery)
+        {
+            var userID = User.Claims.Where(a => a.Type == ClaimTypes.NameIdentifier).FirstOrDefault().Value;
+            var organisation = _organisationService.GetOrganisation(Convert.ToInt32(userID));
+            if (organisation.Data == null)
+            {
+                return BadRequest("STK bulunumadı!");
+            }
+            var result = _advertisementService.GetList(new AdvertisementQuery() { OrganisationId = organisation.Data.OrganisationId }, paginationQuery);
+            if (result != null)
+            {
+                return Ok(result.Data);
+            }
+            return BadRequest(Messages.Error);
+        }
+
+        [Authorize(Policy = "OrganisationOnly")]
+        [HttpGet("GetOrganisationAdvertisementComplatedList")]
+        public ActionResult GetOrganisationAdvertisementComplatedList([FromQuery] PaginationQuery paginationQuery)
+        {
+            var userID = User.Claims.Where(a => a.Type == ClaimTypes.NameIdentifier).FirstOrDefault().Value;
+            var organisation = _organisationService.GetOrganisation(Convert.ToInt32(userID));
+            if (organisation.Data == null)
+            {
+                return BadRequest("STK bulunumadı!");
+            }
+            var result = _advertisementService.GetList(new AdvertisementQuery() { OrganisationId = organisation.Data.OrganisationId,Complated=true }, paginationQuery);
+            if (result != null)
+            {
+                return Ok(result.Data);
+            }
+            return BadRequest(Messages.Error);
         }
     }
 }
