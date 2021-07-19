@@ -14,6 +14,7 @@ namespace Business.Abstract
         IPaginationResult<List<AdvertisementListView>> GetList(AdvertisementQuery adversimentQuery, PaginationQuery paginationQuery = null);
         IDataResult<AdvertisementDetailView> GetAdvertisementDetail(int advertisementId);
         IDataResult<int> Add(AdvertisementDto advertisementDto);
+        IDataResult<int> AddComment(CommentDto comment);
         IResult ApproveAdvertisement(int advertisementId);
         IPaginationResult<List<AdvertisementListView>> GetApproveList(AdminAdvertisementApproveQuery adversimentQuery, PaginationQuery paginationQuery = null);
     }

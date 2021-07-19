@@ -26,5 +26,6 @@ namespace Entities.Concrete
         public CompanyDepartment CompanyDepartment { get; set; }
         public ICollection<OrganisationVolunteer> OrganisationVolunteer { get; set; }
         public ICollection<AdvertisementVolunteer> AdvertisementVolunteers { get; set; }
+        public ICollection<Comment> Comments { get; set; }
     }
 }

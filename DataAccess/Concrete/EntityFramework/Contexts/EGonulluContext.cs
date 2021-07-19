@@ -19,6 +19,9 @@ namespace DataAccess.Concrete.EntityFramework.Contexts
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
 
+            modelBuilder.Entity<Comment>()
+                .HasKey(x => x.Id);
+
             modelBuilder.Entity<Volunteer>()
                 .HasKey(x => x.VolunteerId);
 
@@ -51,6 +54,20 @@ namespace DataAccess.Concrete.EntityFramework.Contexts
                 .HasOne(x => x.Company)
                 .WithMany(x => x.Volunteers)
                 .HasForeignKey(x=>x.CompanyId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+
+            modelBuilder.Entity<Comment>()
+                .HasOne(x => x.Volunteer)
+                .WithMany(x => x.Comments)
+                .HasForeignKey(x => x.VolunteerId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+
+            modelBuilder.Entity<Comment>()
+                .HasOne(x => x.Advertisement)
+                .WithMany(x => x.Comments)
+                .HasForeignKey(x => x.AdvertisementId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<AdvertisementCategory>()
@@ -156,6 +173,7 @@ namespace DataAccess.Concrete.EntityFramework.Contexts
         public DbSet<University> Universitys { get; set; }
         public DbSet<Volunteer> Volunteers { get; set; }
         public DbSet<VolunteerAdvertisementComplated> VolunteerAdvertisementComplateds { get; set; }
+        public DbSet<Comment> Comments { get; set; }
 
     }
 }

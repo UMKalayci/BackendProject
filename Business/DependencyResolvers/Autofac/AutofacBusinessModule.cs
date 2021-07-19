@@ -57,6 +57,8 @@ namespace Business.DependencyResolvers.Autofac
 
             builder.RegisterType<UserManager>().As<UserManager>();
 
+            builder.RegisterType<EfCommentDal>().As<ICommentDal>();
+
             var assembly = System.Reflection.Assembly.GetExecutingAssembly();
 
             builder.RegisterAssemblyTypes(assembly).AsImplementedInterfaces()

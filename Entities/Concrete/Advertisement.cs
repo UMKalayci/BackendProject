@@ -25,6 +25,7 @@ namespace Entities.Concrete
         public ICollection<AdvertisementCategory> AdvertisementCategorys { get; set; }
         public ICollection<AdvertisementPurpose> AdvertisementPurposes { get; set; }
         public ICollection<AdvertisementVolunteer> AdvertisementVolunteers { get; set; }
+        public ICollection<Comment> Comments { get; set; }
         public Organisation Organisation { get; set; }
         public City City { get; set; }
     }

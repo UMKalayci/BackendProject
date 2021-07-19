@@ -83,5 +83,25 @@ namespace WebAPI.Controllers
             }
             return BadRequest(result.Message);
         }
+
+        [Authorize(Policy = "VolunteerOnly")]
+        [HttpPost("AddComment")]
+        public ActionResult AddComment(CommentDto comment)
+        {
+            var userID = User.Claims.Where(a => a.Type == ClaimTypes.NameIdentifier).FirstOrDefault().Value;
+            var volunteer = _volunteerService.GetVolunteer(Convert.ToInt32(userID));
+            if (volunteer.Data == null)
+            {
+                return BadRequest("Gönüllü bulunumadı!");
+            }
+            comment.VolunteerId = volunteer.Data.VolunteerId;
+            var result = _adversimentService.AddComment(comment);
+            if (result.Success)
+            {
+                return Ok(result.Data);
+            }
+            return BadRequest(result.Message);
+        }
+
     }
 }

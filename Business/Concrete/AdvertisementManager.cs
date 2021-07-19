@@ -20,13 +20,50 @@ namespace Business.Concrete
         private IAdvertisementCategoryDal _advertisementCategoryDal;
         private IAdvertisementPurposeDal _advertisementPurposeDal;
         private IVolunteerDal _volunteerDal;
-        public AdvertisementManager(IPaginationUriService uriService, IVolunteerDal volunteerDal, IAdvertisementDal advertisementDal, IAdvertisementCategoryDal advertisementCategoryDal, IAdvertisementPurposeDal advertisementPurposeDal)
+        private ICommentDal _commentDal;
+        private IVolunteerAdvertisementComplatedDal volunteerAdvertisementComplatedDal;
+        public AdvertisementManager(IVolunteerAdvertisementComplatedDal _volunteerAdvertisementComplatedDal, ICommentDal commentDal, IPaginationUriService uriService, IVolunteerDal volunteerDal, IAdvertisementDal advertisementDal, IAdvertisementCategoryDal advertisementCategoryDal, IAdvertisementPurposeDal advertisementPurposeDal)
         {
             _uriService = uriService;
             _advertisementDal = advertisementDal;
             _advertisementCategoryDal = advertisementCategoryDal;
             _advertisementPurposeDal = advertisementPurposeDal;
             _volunteerDal = volunteerDal;
+            _commentDal = commentDal;
+            _volunteerAdvertisementComplatedDal = volunteerAdvertisementComplatedDal;
+        }
+
+        public IDataResult<int> AddComment(CommentDto comment)
+        {
+            try
+            {
+                //var work = volunteerAdvertisementComplatedDal.Get(x => x.AdvertisementVolunteer.AdvertisementId == comment.AdvertisementId &&
+                //                                      x.AdvertisementVolunteer.VolunteerId == comment.VolunteerId
+                //                                      && x.ConfirmationStatus == 1);
+                //if (work != null)
+                //{
+
+                    Comment c = new Comment();
+                    c.AdvertisementId = comment.AdvertisementId;
+                    c.VolunteerId = comment.VolunteerId;
+                    c.Desc = comment.Desc;
+                    c.InsertDate = DateTime.Now;
+                    c.UpdateDate = DateTime.Now;
+                    c.Status = true;
+                    _commentDal.Add(c);
+                    return new SuccessDataResult<int>(1, Messages.SuccessAdded);
+
+                //}
+                //else
+                //{
+                //    return new ErrorDataResult<int>(0, "Yorum yapabilmeniz için öncelikle çalışma yapmanız gerekmektedir.");
+                //}
+            }
+            catch
+            {
+                return new ErrorDataResult<int>(0, Messages.ErrorAdded);
+
+            }
         }
         public IPaginationResult<List<AdvertisementListView>> GetList(AdvertisementQuery adversimentQuery, PaginationQuery paginationQuery = null)
         {
@@ -94,6 +131,17 @@ namespace Business.Concrete
             advertisementDetailView.Categories = advertisement.AdvertisementCategorys.Select(x => x.Category.CategoryName).ToList();
             advertisementDetailView.Corporation = advertisement.Organisation.OrganisationName;
             advertisementDetailView.ApplicantCount = advertisement.AdvertisementVolunteers.Count;
+            advertisementDetailView.CommentList = new List<CommentView>();
+            foreach (var item in advertisement.Comments)
+            {
+                advertisementDetailView.CommentList.Add(new CommentView()
+                {
+                    Desc = item.Desc,
+                    Id = item.Id,
+                    InsertDate = item.InsertDate,
+                    VolunteerName = item.Volunteer.User.FirstName + " " + item.Volunteer.User.LastName
+                });
+            }
             return new SuccessDataResult<AdvertisementDetailView>(advertisementDetailView);
         }
         public IDataResult<int> Add(AdvertisementDto advertisementDto)
@@ -175,7 +223,7 @@ namespace Business.Concrete
                     _advertisementDal.Update(advertisement);
                     return new SuccessResult(Messages.SuccessAdded);
                 }
-                catch 
+                catch
                 {
                     return new ErrorResult(Messages.ErrorAdded);
                 }

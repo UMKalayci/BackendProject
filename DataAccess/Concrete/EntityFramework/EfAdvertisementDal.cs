@@ -23,6 +23,8 @@ namespace DataAccess.Concrete.EntityFramework
                                         .Include(x=>x.AdvertisementPurposes).ThenInclude(x=>x.Purpose)
                                         .Include(x=>x.City)
                                         .Include(x=>x.Organisation)
+                                        .Include(x=>x.Comments)
+                                        .Include(x=>x.Comments).ThenInclude(x=>x.Volunteer).ThenInclude(x=>x.User)
                                         .Include(x=>x.AdvertisementVolunteers).FirstOrDefault();
 
                 return advertisement;

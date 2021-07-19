@@ -88,7 +88,7 @@ namespace WebAPI.Controllers
             var volunteer = _volunteerService.GetVolunteer(Convert.ToInt32(userID));
             if (volunteer.Data == null)
             {
-                return BadRequest("STK bulunumadı!");
+                return BadRequest("Gönüllü bulunumadı!");
             }
             advertisementVolunteerDto.VolunteerId = volunteer.Data.VolunteerId;
             var result = _volunteerService.EnrollAdvertisement(advertisementVolunteerDto);

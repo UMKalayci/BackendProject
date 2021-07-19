@@ -19,5 +19,6 @@ namespace Entities.Views
         public string   Location { get; set; }
         public List<String> Categories { get; set; }
         public List<String> Purposes { get; set; }
+        public List<CommentView> CommentList { get; set; }
     }
 }
