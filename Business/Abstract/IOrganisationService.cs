@@ -19,5 +19,6 @@ namespace Business.Abstract
         IResult ComplatedAdvertisementApprove(VolunteerAdvertisementComplatedApproveDto volunteerAdvertisementComplatedApproveDto);
         IDataResult<List<ApproveListView>> AdvertisementApproveList(int organisationId);
         IDataResult<Organisation> Register(OrganisationForRegisterDto organisationForRegisterDto, string password);
+        IDataResult<Organisation> Update(OrganisationForRegisterDto organisationForRegisterDto, string password);
     }
 }

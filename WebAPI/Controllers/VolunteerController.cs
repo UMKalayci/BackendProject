@@ -62,6 +62,25 @@ namespace WebAPI.Controllers
         }
 
         [Authorize(Policy = "VolunteerOnly")]
+        [HttpPost("update")]
+        public ActionResult Update(VolunteerForRegisterDto volunteerForRegisterDto)
+        {
+            var userExists = _volunteerService.UserExists(volunteerForRegisterDto.Email);
+            if (userExists.Success)
+            {
+                return BadRequest(userExists.Message);
+            }
+
+            var updateResult = _volunteerService.Update(volunteerForRegisterDto, volunteerForRegisterDto.Password);
+            if (updateResult.Success)
+            {
+                return Ok();
+            }
+
+            return BadRequest(updateResult.Message);
+        }
+
+        [Authorize(Policy = "VolunteerOnly")]
         [HttpPost("EnrollAdvertisement")]
         public ActionResult EnrollAdvertisement(AdvertisementVolunteerDto advertisementVolunteerDto)
         {

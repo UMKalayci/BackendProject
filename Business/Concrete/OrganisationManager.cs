@@ -198,6 +198,38 @@ namespace Business.Concrete
                 return new ErrorDataResult<Organisation>(Messages.SuccessAdded);
             }
         }
+
+        public IDataResult<Organisation> Update(OrganisationForRegisterDto organisationForRegisterDto, string password)
+        {
+            try
+            {
+                var user = _userService.GetByMail(organisationForRegisterDto.Email);
+
+                user.FirstName = organisationForRegisterDto.FirstName;
+                user.LastName = organisationForRegisterDto.LastName;
+
+                _userService.Update(user);
+                var organisation = _organisationDal.Get(x=>x.UserId==user.Id);
+
+                organisation.CityId = organisationForRegisterDto.CityId;
+                organisation.Phone = organisationForRegisterDto.Phone;
+                organisation.FinanceDocument = organisationForRegisterDto.FinanceDocument;
+                organisation.Image = organisationForRegisterDto.Image;
+                organisation.Desc = organisationForRegisterDto.Desc;
+                organisation.FoundationOfYear = organisationForRegisterDto.FoundationOfYear;
+                organisation.IsMemberAcikAcik = organisationForRegisterDto.IsMemberAcikAcik;
+                organisation.OrganisationName = organisationForRegisterDto.OrganisationName;
+                organisation.UpdateDate = DateTime.Now;
+
+                _organisationDal.Update(organisation);
+                organisation.User = user;
+                return new SuccessDataResult<Organisation>(organisation, Messages.UserRegistered);
+            }
+            catch (Exception hata)
+            {
+                return new ErrorDataResult<Organisation>(Messages.SuccessAdded);
+            }
+        }
         public IResult ComplatedAdvertisementApprove(VolunteerAdvertisementComplatedApproveDto volunteerAdvertisementComplatedApproveDto)
         {
             try

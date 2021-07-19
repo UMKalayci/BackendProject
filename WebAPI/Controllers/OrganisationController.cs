@@ -47,6 +47,25 @@ namespace WebAPI.Controllers
             return BadRequest(registerResult.Message);
         }
 
+        [Authorize(Policy = "OrganisationOnly")]
+        [HttpPost("update")]
+        public ActionResult Update(OrganisationForRegisterDto organisationForRegisterDto)
+        {
+            var userExists = _organisationService.UserExists(organisationForRegisterDto.Email);
+            if (userExists.Success)
+            {
+                return BadRequest(userExists.Message);
+            }
+
+            var updateResult = _organisationService.Update(organisationForRegisterDto, organisationForRegisterDto.Password);
+            if (updateResult.Success)
+            {
+
+                    return Ok(updateResult.Data);
+            }
+
+            return BadRequest(updateResult.Message);
+        }
 
         [Authorize(Policy = "OrganisationOnly")]
         [HttpPost("ComplatedAdvertisementApprove")]

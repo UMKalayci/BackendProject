@@ -113,6 +113,38 @@ namespace Business.Concrete
                 return new ErrorDataResult<Volunteer>(Messages.VolunteerAddError);
             }
         }
+
+        [ValidationAspect(typeof(VolunteerValidator), Priority = 1)]
+        public IDataResult<Volunteer> Update(VolunteerForRegisterDto volunteerForRegisterDto, string password)
+        {
+            try
+            {
+                var user = _userService.GetByMail(volunteerForRegisterDto.Email);
+                user.FirstName = volunteerForRegisterDto.FirstName;
+                user.LastName = volunteerForRegisterDto.LastName;
+                _userService.Update(user);
+
+               var volunteer= _volunteerDal.Get(x => x.UserId == user.Id);
+
+                volunteer.CityId = volunteerForRegisterDto.CityId;
+                volunteer.BirthDate = volunteerForRegisterDto.BirthDate;
+                volunteer.CompanyId = volunteerForRegisterDto.CompanyId;
+                volunteer.Gender = volunteerForRegisterDto.Gender;
+                volunteer.Phone = volunteerForRegisterDto.Phone;
+                volunteer.UniversityId = volunteerForRegisterDto.UniversityId;
+                volunteer.CompanyDepartmentId = volunteerForRegisterDto.CompanyDepartmentId;
+                volunteer.HighSchool = volunteerForRegisterDto.HighSchool;
+                volunteer.UpdateDate = DateTime.Now;
+
+                _volunteerDal.Update(volunteer);
+                volunteer.User = user;
+                return new SuccessDataResult<Volunteer>(volunteer, Messages.UserRegistered);
+            }
+            catch (Exception hata)
+            {
+                return new ErrorDataResult<Volunteer>(Messages.VolunteerAddError);
+            }
+        }
         public IResult EnrollAdvertisement(AdvertisementVolunteerDto advertisementVolunteerDto)
         {
             var advertisement = _advertisementDal.Get(x => x.AdvertisementId == advertisementVolunteerDto.AdvertisementId);
