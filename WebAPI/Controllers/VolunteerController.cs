@@ -94,7 +94,7 @@ namespace WebAPI.Controllers
             var result = _volunteerService.EnrollAdvertisement(advertisementVolunteerDto);
             if (result.Success)
             {
-                return Ok(result.Message);
+                return Ok(result);
             }
             return BadRequest(result.Message);
         }

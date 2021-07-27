@@ -1,4 +1,5 @@
 ﻿using Business.Abstract;
+using Entities.Dtos;
 using Entities.QueryModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -45,24 +46,24 @@ namespace WebAPI.Controllers
 
         [Authorize(Policy = "AdminOnly")]
         [HttpPost("ApproveAdvertisement")]
-        public ActionResult ApproveAdvertisement([FromQuery] int advertisementId)
+        public ActionResult ApproveAdvertisement(AdvertisementApproveDto advertisementApproveDto)
         {
-            var result = _advertisementService.ApproveAdvertisement(advertisementId);
+            var result = _advertisementService.ApproveAdvertisement(advertisementApproveDto.AdvertisementId);
             if (result.Success)
             {
-                return Ok(result.Message);
+                return Ok(result);
             }
 
             return BadRequest(result.Message);
         }
         [Authorize(Policy = "AdminOnly")]
         [HttpPost("ApproveOrganisation")]
-        public ActionResult ApproveOrganisation([FromQuery] int advertisementId)
+        public ActionResult ApproveOrganisation([FromQuery] OrganisationApproveDto organisationApproveDto)
         {
-            var result = _organisationService.ApproveOrganisation(advertisementId);
+            var result = _organisationService.ApproveOrganisation(organisationApproveDto.OrganisationId);
             if (result.Success)
             {
-                return Ok(result.Message);
+                return Ok(result);
             }
 
             return BadRequest(result.Message);
