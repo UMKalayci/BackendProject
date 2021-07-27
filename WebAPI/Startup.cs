@@ -63,6 +63,7 @@ namespace WebAPI
                 options.AddPolicy("OrganisationOnly", policy => policy.RequireClaim(ClaimTypes.Role, "STK"));
                 options.AddPolicy("VolunteerOnly", policy => policy.RequireClaim(ClaimTypes.Role, "Gönüllü"));
                 options.AddPolicy("AdminOnly", policy => policy.RequireClaim(ClaimTypes.Role, "Admin"));
+                options.AddPolicy("CompanyOnly", policy => policy.RequireClaim(ClaimTypes.Role, "Þirket"));
             });
             services.AddControllersWithViews()
                     .AddNewtonsoftJson(options =>

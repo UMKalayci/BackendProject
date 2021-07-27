@@ -22,12 +22,14 @@ namespace WebAPI.Controllers
         private IAuthService _authService;
         private IVolunteerService _volunteerService;
         private IOrganisationService _organisationService;
+        private ICompanyService _companyService;
 
-        public AuthController(IAuthService authService, IVolunteerService volunteerService, IOrganisationService organisationService)
+        public AuthController(ICompanyService companyService,IAuthService authService, IVolunteerService volunteerService, IOrganisationService organisationService)
         {
             _authService = authService;
             _volunteerService = volunteerService;
             _organisationService = organisationService;
+            _companyService = companyService;
         }
 
         [HttpPost("login")]
@@ -49,6 +51,18 @@ namespace WebAPI.Controllers
             else if (userForLoginDto.Type == 2)
             {
                 var organisation = _organisationService.GetOrganisation(userToLogin.Data.Id);
+                if (organisation.Data != null && organisation.Data.Status == false)
+                {
+                    return BadRequest("Hesabınızın onaylanmasını bekleyiniz!");
+                }
+                if (!organisation.Success)
+                {
+                    return BadRequest(organisation.Message);
+                }
+            }
+            else if (userForLoginDto.Type == 3)
+            {
+                var organisation = _companyService.GetCompany(userToLogin.Data.Id);
                 if (organisation.Data != null && organisation.Data.Status == false)
                 {
                     return BadRequest("Hesabınızın onaylanmasını bekleyiniz!");

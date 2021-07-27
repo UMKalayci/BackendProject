@@ -34,6 +34,10 @@ namespace Business.DependencyResolvers.Autofac
             builder.RegisterType<EfAdvertisementCategoryDal>().As<IAdvertisementCategoryDal>();
             builder.RegisterType<EfAdvertisementPurposeDal>().As<IAdvertisementPurposeDal>();
 
+
+            builder.RegisterType<EfCompanyDal>().As<ICompanyDal>();
+            builder.RegisterType<CompanyManager>().As<ICompanyService>();
+
             builder.RegisterType<UserManager>().As<IUserService>();
             builder.RegisterType<EfUserDal>().As<IUserDal>();
 

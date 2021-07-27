@@ -195,7 +195,7 @@ namespace Business.Concrete
             }
             catch (Exception hata)
             {
-                return new ErrorDataResult<Organisation>(Messages.SuccessAdded);
+                return new ErrorDataResult<Organisation>(Messages.ErrorAdded);
             }
         }
 
