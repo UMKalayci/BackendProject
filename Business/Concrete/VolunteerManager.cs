@@ -22,6 +22,7 @@ using DataAccess.Abstract;
 using DataAccess.Concrete.EntityFramework;
 using Entities.Concrete;
 using Entities.Dtos;
+using Entities.QueryModels;
 using Entities.Views;
 using FluentValidation;
 using Microsoft.AspNetCore.Http;
@@ -152,6 +153,9 @@ namespace Business.Concrete
             if (advertisement == null || advertisement.AppStartDate > DateTime.Now || advertisement.AppEndDate < DateTime.Now)
                 return new ErrorResult(Messages.Error);
 
+            if (_volunteerDal.IsAdvertisementEnroll(advertisementVolunteerDto.AdvertisementId)){
+                return new ErrorResult(Messages.ErrorEnroll);
+            }
             if (advertisementVolunteerDto.AdvertisementId > 0 && advertisementVolunteerDto.VolunteerId > 0)
             {
                 AdvertisementVolunteer advertisementVolunteer = new AdvertisementVolunteer();
@@ -192,6 +196,60 @@ namespace Business.Concrete
             {
                 return new ErrorResult(Messages.ErrorAdded);
             }
+        }
+        public IDataResult<List<AdvertisementListView>> GetActiveAdvertisementList(int volunteerId)
+        {
+            List<AdvertisementListView> result = new List<AdvertisementListView>();
+            AdvertisementQuery advertisementQuery = new AdvertisementQuery();
+            advertisementQuery.VolunteerId = volunteerId;
+            advertisementQuery.Complated = false;
+
+            var advertisementList = _volunteerDal.GetAdvertisementList(advertisementQuery);
+            foreach (var item in advertisementList)
+            {
+                result.Add(new AdvertisementListView()
+                {
+                    AdvertisementId = item.AdvertisementId,
+                    AdvertisementDesc = item.AdvertisementDesc,
+                    AdvertisementTitle = item.AdvertisementTitle,
+                    EndDate = item.EndDate,
+                    IsOnline = item.IsOnline,
+                    OrganisationId = item.OrganisationId,
+                    OrganisationName = item.Organisation.OrganisationName,
+                    StartDate = item.StartDate,
+                    Record = true,
+                    Status = item.Status
+                });
+            }
+            return new SuccessDataResult<List<AdvertisementListView>>(result);
+
+        }
+        public IDataResult<List<AdvertisementListView>> GetComplatedAdvertisementList(int volunteerId)
+        {
+            List<AdvertisementListView> result = new List<AdvertisementListView>();
+            AdvertisementQuery advertisementQuery = new AdvertisementQuery();
+            advertisementQuery.VolunteerId = volunteerId;
+            advertisementQuery.Complated = true;
+
+            var advertisementList = _volunteerDal.GetAdvertisementList(advertisementQuery);
+            foreach (var item in advertisementList)
+            {
+                result.Add(new AdvertisementListView()
+                {
+                    AdvertisementId = item.AdvertisementId,
+                    AdvertisementDesc = item.AdvertisementDesc,
+                    AdvertisementTitle = item.AdvertisementTitle,
+                    EndDate = item.EndDate,
+                    IsOnline = item.IsOnline,
+                    OrganisationId = item.OrganisationId,
+                    OrganisationName = item.Organisation.OrganisationName,
+                    StartDate = item.StartDate,
+                    Record=true,
+                    Status=item.Status
+                });
+            }
+            return new SuccessDataResult<List<AdvertisementListView>>(result);
+
         }
         public IResult UserExists(string email)
         {

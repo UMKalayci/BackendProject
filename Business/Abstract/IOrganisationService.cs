@@ -11,6 +11,7 @@ namespace Business.Abstract
 {
     public interface IOrganisationService
     {
+        IDataResult<OrganisationProfileView> GetOrganisationProfileDetail(int organisationId);
         IDataResult<OrganisationDashboardModel> GetOrganisationDashboard(int organisationId);
         IResult ApproveOrganisation(int organisationId);
         IPaginationResult<List<OrganisationApproveListView>> GetApproveList(AdminOrganisationListQuery organisationListQuery, PaginationQuery paginationQuery = null);

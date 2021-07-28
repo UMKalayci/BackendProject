@@ -10,6 +10,8 @@ namespace Business.Abstract
 {
     public interface IVolunteerService
     {
+        IDataResult<List<AdvertisementListView>> GetComplatedAdvertisementList(int volunteerId);
+        IDataResult<List<AdvertisementListView>> GetActiveAdvertisementList(int volunteerId);
         IDataResult<Volunteer> Update(VolunteerForRegisterDto volunteerForRegisterDto, string password);
         IDataResult<Volunteer> GetVolunteer(int userId);
         IDataResult<VolunteerProfileView> GetVolunterProfile(int userId);

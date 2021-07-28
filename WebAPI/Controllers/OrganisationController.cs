@@ -150,7 +150,7 @@ namespace WebAPI.Controllers
             {
                 return BadRequest("STK bulunumadı!");
             }
-            var result = _advertisementService.GetList(new AdvertisementQuery() { OrganisationId = organisation.Data.OrganisationId }, paginationQuery);
+            var result = _advertisementService.GetList(new AdvertisementQuery() { OrganisationId = organisation.Data.OrganisationId,Complated=false }, paginationQuery);
             if (result != null)
             {
                 return Ok(result.Data);
@@ -175,5 +175,24 @@ namespace WebAPI.Controllers
             }
             return BadRequest(Messages.Error);
         }
+
+        [Authorize(Policy = "OrganisationOnly")]
+        [HttpGet("GetOrganisationProfileDetail")]
+        public ActionResult GetOrganisationProfileDetail()
+        {
+            var userID = User.Claims.Where(a => a.Type == ClaimTypes.NameIdentifier).FirstOrDefault().Value;
+            var organisation = _organisationService.GetOrganisation(Convert.ToInt32(userID));
+            if (organisation.Data == null)
+            {
+                return BadRequest("STK bulunumadı!");
+            }
+            var result = _organisationService.GetOrganisationProfileDetail(organisation.Data.OrganisationId);
+            if (result != null)
+            {
+                return Ok(result.Data);
+            }
+            return BadRequest(Messages.Error);
+        }
+
     }
 }

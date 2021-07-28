@@ -22,7 +22,7 @@ namespace DataAccess.Concrete.EntityFramework
                 var query = context.AdvertisementVolunteers
                                     .Where(x => x.VolunteerId == filter.VolunteerId)
                                     .Select(x => x.Advertisement);
-
+                query = query.Include(x => x.Organisation);
                 if (filter == null)
                 {
                     if (paginationQuery != null)
@@ -38,7 +38,18 @@ namespace DataAccess.Concrete.EntityFramework
                     if (filter.PurposeId != 0)
                         query = query.Where(x => x.AdvertisementPurposes.Any(y => y.PurposeId == filter.PurposeId));
 
-
+                    if (filter.Complated == true)
+                    {
+                        query = query.Where(x => x.AdvertisementVolunteers
+                                     .Any(y => y.VolunteerAdvertisementComplateds
+                                     .Any(z => z.ConfirmationStatus == 1)));
+                    }
+                    else if (filter.Complated == false)
+                    {
+                        query = query.Where(x => x.AdvertisementVolunteers
+                                     .Any(y => y.VolunteerAdvertisementComplateds
+                                     .Any(z => z.ConfirmationStatus == 1)) == false);
+                    }
                     query = query.OrderByDescending(x => x.Status).ThenBy(x => x.StartDate);
                     if (paginationQuery != null)
                         query = query.Skip((paginationQuery.PageNumber - 1) * paginationQuery.PageSize).Take(paginationQuery.PageSize);
@@ -53,12 +64,20 @@ namespace DataAccess.Concrete.EntityFramework
         {
             using (var context = new EGonulluContext())
             {
-               var query= context.Volunteers.Where(x => x.UserId == userId)
-                    .Include(x => x.User).Include(x => x.City);
+                var query = context.Volunteers.Where(x => x.UserId == userId)
+                     .Include(x => x.User).Include(x => x.City);
 
                 return query.FirstOrDefault();
             }
 
+        }
+
+        public bool IsAdvertisementEnroll(int advertisementId)
+        {
+            using (var context = new EGonulluContext())
+            {
+                return context.Volunteers.Any(x => x.AdvertisementVolunteers.Any(y => y.AdvertisementId == advertisementId));
+            }
         }
         public int GetAdvertisementCount(AdvertisementQuery filter = null)
         {

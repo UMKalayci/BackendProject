@@ -9,6 +9,7 @@ namespace DataAccess.Abstract
 {
     public interface IOrganisationDal : IEntityRepository<Organisation>
     {
+        Organisation GetOrganisationProfilDetail(int organisationId);
         Organisation GetOrganisationDashboard(int organisationId);
         IEnumerable<Organisation> GetApproveList(AdminOrganisationListQuery filter = null, PaginationQuery paginationQuery = null);
         IEnumerable<Volunteer> GetOrganisationVolunteerList(int organisationId, PaginationQuery paginationQuery = null);

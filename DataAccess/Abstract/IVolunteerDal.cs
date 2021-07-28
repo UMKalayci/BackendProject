@@ -9,6 +9,7 @@ namespace DataAccess.Abstract
 {
     public interface IVolunteerDal:IEntityRepository<Volunteer>
     {
+        bool IsAdvertisementEnroll(int advertisementId);
         IEnumerable<Advertisement> GetAdvertisementList(AdvertisementQuery filter, PaginationQuery paginationQuery = null);
         int GetAdvertisementCount(AdvertisementQuery filter);
 

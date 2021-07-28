@@ -303,5 +303,27 @@ namespace Business.Concrete
             }
             return new ErrorResult(Messages.ErrorAdded);
         }
+        public IDataResult<OrganisationProfileView> GetOrganisationProfileDetail(int organisationId)
+        {
+            OrganisationProfileView result=null;
+            var organisation = _organisationDal.GetOrganisationProfilDetail(organisationId);
+            
+            if (organisation != null)
+            {
+                result = new OrganisationProfileView() { 
+                FinanceDocument=organisation.FinanceDocument,
+                CityName=organisation.City.CityName,
+                Desc=organisation.Desc,
+                FoundationOfYear=organisation.FoundationOfYear,
+                Image=organisation.Image,
+                IsMemberAcikAcik=organisation.IsMemberAcikAcik,
+                NameSurname=organisation.User.FirstName+" "+organisation.User.LastName,
+                OrganisationId=organisation.OrganisationId,
+                OrganisationName=organisation.OrganisationName,
+                Phone=organisation.Phone
+                };
+            }
+            return new SuccessDataResult<OrganisationProfileView>(result);
+        }
     }
 }

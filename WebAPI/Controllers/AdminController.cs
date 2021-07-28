@@ -58,7 +58,7 @@ namespace WebAPI.Controllers
         }
         [Authorize(Policy = "AdminOnly")]
         [HttpPost("ApproveOrganisation")]
-        public ActionResult ApproveOrganisation([FromQuery] OrganisationApproveDto organisationApproveDto)
+        public ActionResult ApproveOrganisation( OrganisationApproveDto organisationApproveDto)
         {
             var result = _organisationService.ApproveOrganisation(organisationApproveDto.OrganisationId);
             if (result.Success)

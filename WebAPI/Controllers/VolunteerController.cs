@@ -133,6 +133,41 @@ namespace WebAPI.Controllers
             return BadRequest(result.Message);
         }
 
+        [Authorize(Policy = "VolunteerOnly")]
+        [HttpGet("GetActiveAdvertisementList")]
+        public ActionResult GetActiveAdvertisementList()
+        {
+            var userID = User.Claims.Where(a => a.Type == ClaimTypes.NameIdentifier).FirstOrDefault().Value;
+            var volunteer = _volunteerService.GetVolunteer(Convert.ToInt32(userID));
+            if (volunteer.Data == null)
+            {
+                return BadRequest("Gönüllü bulunumadı!");
+            }
+            var result = _volunteerService.GetActiveAdvertisementList(volunteer.Data.VolunteerId);
+            if (result.Success)
+            {
+                return Ok(result.Data);
+            }
+            return BadRequest(result.Message);
+        }
+
+        [Authorize(Policy = "VolunteerOnly")]
+        [HttpGet("GetComplatedAdvertisementList")]
+        public ActionResult GetComplatedAdvertisementList()
+        {
+            var userID = User.Claims.Where(a => a.Type == ClaimTypes.NameIdentifier).FirstOrDefault().Value;
+            var volunteer = _volunteerService.GetVolunteer(Convert.ToInt32(userID));
+            if (volunteer.Data == null)
+            {
+                return BadRequest("Gönüllü bulunumadı!");
+            }
+            var result = _volunteerService.GetComplatedAdvertisementList(volunteer.Data.VolunteerId);
+            if (result.Success)
+            {
+                return Ok(result.Data);
+            }
+            return BadRequest(result.Message);
+        }
 
     }
 }

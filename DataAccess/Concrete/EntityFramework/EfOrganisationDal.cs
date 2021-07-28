@@ -43,6 +43,18 @@ namespace DataAccess.Concrete.EntityFramework
             }
         }
 
+
+        public Organisation GetOrganisationProfilDetail(int organisationId)
+        {
+            using (var context = new EGonulluContext())
+            {
+                var query = context.Organisations.Where(x => x.OrganisationId == organisationId)
+                                                 .Include(x => x.City)
+                                                 .Include(x => x.User);
+                return query.FirstOrDefault();
+            }
+        }
+
         public IEnumerable<Volunteer> GetOrganisationVolunteerList(int organisationId, PaginationQuery paginationQuery = null)
         {
             using (var context = new EGonulluContext())
