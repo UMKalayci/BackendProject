@@ -14,6 +14,50 @@ namespace DataAccess.Concrete.EntityFramework
 {
     public class EfVolunteerDal : EfEntityRepositoryBase<Volunteer, EGonulluContext>, IVolunteerDal
     {
+        public Volunteer GetVolunteerDashboard(int volunteerId)
+        {
+            using (var context = new EGonulluContext())
+            {
+                var query = context.Volunteers.Where(x => x.VolunteerId == volunteerId);
+                query = query.Include(x => x.AdvertisementVolunteers);
+                query = query
+                    .Include(x => x.AdvertisementVolunteers)
+                    .ThenInclude(x => x.Advertisement);
+
+                query = query
+                    .Include(x => x.AdvertisementVolunteers)
+                    .ThenInclude(x => x.Advertisement)
+                    .ThenInclude(x => x.AdvertisementPurposes);
+
+                query = query
+                    .Include(x => x.AdvertisementVolunteers)
+                    .ThenInclude(x => x.Advertisement)
+                    .ThenInclude(x => x.AdvertisementCategorys);
+
+
+                query = query
+                    .Include(x => x.AdvertisementVolunteers)
+                    .ThenInclude(x => x.Advertisement)
+                    .ThenInclude(x => x.AdvertisementPurposes)
+                    .ThenInclude(x=>x.Purpose);
+
+                query = query
+                    .Include(x => x.AdvertisementVolunteers)
+                    .ThenInclude(x => x.Advertisement)
+                    .ThenInclude(x => x.AdvertisementCategorys)
+                    .ThenInclude(x=>x.Category);
+
+
+                query = query
+                    .Include(x => x.AdvertisementVolunteers)
+                    .ThenInclude(x => x.Advertisement)
+                    .ThenInclude(x => x.Organisation);
+                query = query.Include(x => x.AdvertisementVolunteers)
+                    .ThenInclude(x => x.VolunteerAdvertisementComplateds);
+
+                return query.FirstOrDefault();
+            }
+        }
         public IEnumerable<Advertisement> GetAdvertisementList(AdvertisementQuery filter = null, PaginationQuery paginationQuery = null)
         {
             using (var context = new EGonulluContext())

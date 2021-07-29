@@ -26,6 +26,7 @@
         public static string ErrorEnroll = "Kullanıcının bu projeye kaydı bulunmaktadır.";
 
         public static string Error = "Hata";
+        public static string EndDateError = "Başvuru tarihi geçmiştir.";
 
         public static string AuthorizationDenied = "Yetkiniz yok";
     }

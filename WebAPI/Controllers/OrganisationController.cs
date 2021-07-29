@@ -23,6 +23,7 @@ namespace WebAPI.Controllers
             _authService = authService;
             _advertisementService = advertisementService;
         }
+        //tamam
         [HttpPost("register")]
         public ActionResult Register(OrganisationForRegisterDto organisationForRegisterDto)
         {
@@ -47,6 +48,7 @@ namespace WebAPI.Controllers
             return BadRequest(registerResult.Message);
         }
 
+        //tamam
         [Authorize(Policy = "OrganisationOnly")]
         [HttpPost("update")]
         public ActionResult Update(OrganisationForRegisterDto organisationForRegisterDto)
@@ -67,6 +69,7 @@ namespace WebAPI.Controllers
             return BadRequest(updateResult.Message);
         }
 
+        //tamam
         [Authorize(Policy = "OrganisationOnly")]
         [HttpPost("ComplatedAdvertisementApprove")]
         public ActionResult ComplatedAdvertisementApprove(VolunteerAdvertisementComplatedApproveDto volunteerAdvertisementComplatedApproveDto)
@@ -87,6 +90,7 @@ namespace WebAPI.Controllers
             return BadRequest(result.Message);
         }
 
+        //tamam
         [Authorize(Policy = "OrganisationOnly")]
         [HttpGet("AdvertisementApproveList")]
         public ActionResult AdvertisementApproveList()
@@ -105,6 +109,7 @@ namespace WebAPI.Controllers
             return BadRequest(result.Message);
         }
 
+        //tamam
         [Authorize(Policy = "OrganisationOnly")]
         [HttpGet("GetOrganisationDashboard")]
         public ActionResult GetOrganisationDashboard()
@@ -122,6 +127,7 @@ namespace WebAPI.Controllers
             }
             return BadRequest(result.Message);
         }
+        //tamam
         [Authorize(Policy = "OrganisationOnly")]
         [HttpGet("GetOrganisationVolunteerList")]
         public ActionResult GetOrganisationVolunteerList([FromQuery] PaginationQuery paginationQuery)
@@ -140,6 +146,7 @@ namespace WebAPI.Controllers
             return BadRequest(Messages.Error);
         }
 
+        //tamam
         [Authorize(Policy = "OrganisationOnly")]
         [HttpGet("GetOrganisationAdvertisementList")]
         public ActionResult GetOrganisationAdvertisementList([FromQuery] PaginationQuery paginationQuery)
@@ -158,6 +165,7 @@ namespace WebAPI.Controllers
             return BadRequest(Messages.Error);
         }
 
+        //tamam
         [Authorize(Policy = "OrganisationOnly")]
         [HttpGet("GetOrganisationAdvertisementComplatedList")]
         public ActionResult GetOrganisationAdvertisementComplatedList([FromQuery] PaginationQuery paginationQuery)
@@ -176,6 +184,7 @@ namespace WebAPI.Controllers
             return BadRequest(Messages.Error);
         }
 
+        //tamam
         [Authorize(Policy = "OrganisationOnly")]
         [HttpGet("GetOrganisationProfileDetail")]
         public ActionResult GetOrganisationProfileDetail()

@@ -4,12 +4,12 @@ using System.Text;
 
 namespace Entities.Views
 {
-    public class OrganisationDashboardModel
+    public class VolunteerDashboardModel
     {
-        public int TotalVolunteerCount { get; set; }
+        public int TotalOrganisationCount { get; set; }
         public int TotalActiveProjectCount { get; set; }
-        public int TotalComplatedProjectCount { get; set; }
-        public int TotalVolunteerWorkCount { get; set; }
+        public int TotalComplatedHours{ get; set; }
+        public int TotalComplatedCount { get; set; }
         public Dictionary<string,int> PurposeCount { get; set; }
         public Dictionary<string,int> CategoryCount { get; set; }
     }

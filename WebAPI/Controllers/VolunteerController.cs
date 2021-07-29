@@ -32,7 +32,7 @@ namespace WebAPI.Controllers
             _emailHelper = emailHelper;
 
         }
-
+        //tamam
         [HttpPost("register")]
         public ActionResult Register(VolunteerForRegisterDto volunteerForRegisterDto)
         {
@@ -61,6 +61,7 @@ namespace WebAPI.Controllers
             return BadRequest(registerResult.Message);
         }
 
+        //tamam
         [Authorize(Policy = "VolunteerOnly")]
         [HttpPost("update")]
         public ActionResult Update(VolunteerForRegisterDto volunteerForRegisterDto)
@@ -80,6 +81,7 @@ namespace WebAPI.Controllers
             return BadRequest(updateResult.Message);
         }
 
+        //tamam
         [Authorize(Policy = "VolunteerOnly")]
         [HttpPost("EnrollAdvertisement")]
         public ActionResult EnrollAdvertisement(AdvertisementVolunteerDto advertisementVolunteerDto)
@@ -99,6 +101,7 @@ namespace WebAPI.Controllers
             return BadRequest(result.Message);
         }
 
+        //tamam
         [Authorize(Policy = "VolunteerOnly")]
         [HttpPost("ComplatedAdvertisement")]
         public ActionResult ComplatedAdvertisement(VolunteerAdvertisementComplatedDto volunteerAdvertisementComplatedDto)
@@ -119,6 +122,7 @@ namespace WebAPI.Controllers
             return BadRequest(result.Message);
         }
 
+        //tamam
         [Authorize(Policy = "VolunteerOnly")]
         [HttpGet("GetVolunteerProfile")]
         public ActionResult GetVolunteerProfile()
@@ -133,6 +137,7 @@ namespace WebAPI.Controllers
             return BadRequest(result.Message);
         }
 
+        //tamam
         [Authorize(Policy = "VolunteerOnly")]
         [HttpGet("GetActiveAdvertisementList")]
         public ActionResult GetActiveAdvertisementList()
@@ -151,6 +156,7 @@ namespace WebAPI.Controllers
             return BadRequest(result.Message);
         }
 
+        //tamam
         [Authorize(Policy = "VolunteerOnly")]
         [HttpGet("GetComplatedAdvertisementList")]
         public ActionResult GetComplatedAdvertisementList()
@@ -169,5 +175,23 @@ namespace WebAPI.Controllers
             return BadRequest(result.Message);
         }
 
+        //tamam
+        [Authorize(Policy = "VolunteerOnly")]
+        [HttpGet("GetVolunteerDashboard")]
+        public ActionResult GetVolunteerDashboard()
+        {
+            var userID = User.Claims.Where(a => a.Type == ClaimTypes.NameIdentifier).FirstOrDefault().Value;
+            var organisation = _volunteerService.GetVolunteer(Convert.ToInt32(userID));
+            if (organisation.Data == null)
+            {
+                return BadRequest("STK bulunumadı!");
+            }
+            var result = _volunteerService.GeVolunteerDashboard(organisation.Data.VolunteerId);
+            if (result.Success)
+            {
+                return Ok(result.Data);
+            }
+            return BadRequest(result.Message);
+        }
     }
 }

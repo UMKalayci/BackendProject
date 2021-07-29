@@ -50,7 +50,7 @@ namespace Business.Concrete
             _advertisementVolunteerDal = advertisementVolunteerDal;
         }
 
-        public IPaginationResult<List<VolunteerListView>>  GetOrganisationVolunteerList(int organisationId, PaginationQuery paginationQuery = null)
+        public IPaginationResult<List<VolunteerListView>> GetOrganisationVolunteerList(int organisationId, PaginationQuery paginationQuery = null)
         {
             try
             {
@@ -60,13 +60,13 @@ namespace Business.Concrete
                 {
                     resultList.Add(new VolunteerListView()
                     {
-                        BirthDate=item.BirthDate,
-                        CityName=item.City.CityName,
-                        Gender=item.Gender,
-                        NameSurname=item.User.FirstName+" "+item.User.LastName,
-                        Phone=item.Phone,
-                        VolunteerId=item.VolunteerId
-                    });;
+                        BirthDate = item.BirthDate,
+                        CityName = item.City.CityName,
+                        Gender = item.Gender,
+                        NameSurname = item.User.FirstName + " " + item.User.LastName,
+                        Phone = item.Phone,
+                        VolunteerId = item.VolunteerId
+                    }); ;
                 }
                 int count = _organisationDal.GetOrganisationVolunteerCount(organisationId);
                 return PaginationExtensions.CreatePaginationResult<List<VolunteerListView>>(resultList, true, paginationQuery, count, _uriService);
@@ -84,31 +84,36 @@ namespace Business.Concrete
             {
                 var organisationDetail = _organisationDal.GetOrganisationDashboard(organisationId);
                 OrganisationDashboardModel result = new OrganisationDashboardModel();
-                result.TotalActiveProjectCount = organisationDetail.Advertisements.Count();
-                result.TotalVolunteerCount = organisationDetail.Advertisements.Sum(x => x.AdvertisementVolunteers.Count);
-                result.TotalVolunteerWorkCount = organisationDetail.Advertisements.Sum(x => x.AdvertisementVolunteers.Sum(y => y.VolunteerAdvertisementComplateds.Sum(z => z.TotalWork)));
+                result.TotalActiveProjectCount = organisationDetail.Advertisements == null ? 0 : organisationDetail.Advertisements.Where(x=>x.Status== true && x.EndDate > DateTime.Now).Count();
+                result.TotalComplatedProjectCount = organisationDetail.Advertisements == null ? 0 : organisationDetail.Advertisements.Where(x=>x.Status== true && x.EndDate< DateTime.Now).Count();
+                result.TotalVolunteerCount = organisationDetail.Advertisements == null ? 0 : organisationDetail.Advertisements.Where(x => x.Status == true).Sum(x => x.AdvertisementVolunteers.Count);
+                result.TotalVolunteerWorkCount = organisationDetail.Advertisements == null ? 0 : organisationDetail.Advertisements.Where(x => x.Status == true).Sum(x => x.AdvertisementVolunteers.Sum(y => y.VolunteerAdvertisementComplateds.Sum(z => z.TotalWork)));
                 Dictionary<string, int> purposeList = new Dictionary<string, int>();
-                foreach (var item in organisationDetail.Advertisements.SelectMany(x=>x.AdvertisementPurposes.Select(y=>y.Purpose.PurposeName)).ToList())
-                {
-                    if (purposeList.Any(x => x.Key == item))
-                    {
-                        purposeList[item] += 1;
-                    }
-                    else
-                    {
-                        purposeList[item] = 1;
-                    }
-                }
                 Dictionary<string, int> categoryList = new Dictionary<string, int>();
-                foreach (var item in organisationDetail.Advertisements.SelectMany(x => x.AdvertisementCategorys.Select(y => y.Category.CategoryName)).ToList())
+
+                if (organisationDetail.Advertisements != null)
                 {
-                    if (categoryList.Any(x => x.Key == item))
+                    foreach (var item in organisationDetail.Advertisements.Where(x => x.Status == true).SelectMany(x => x.AdvertisementPurposes.Select(y => y.Purpose.PurposeName)).ToList())
                     {
-                        categoryList[item] += 1;
+                        if (purposeList.Any(x => x.Key == item))
+                        {
+                            purposeList[item] += 1;
+                        }
+                        else
+                        {
+                            purposeList[item] = 1;
+                        }
                     }
-                    else
+                    foreach (var item in organisationDetail.Advertisements.Where(x => x.Status == true).SelectMany(x => x.AdvertisementCategorys.Select(y => y.Category.CategoryName)).ToList())
                     {
-                        categoryList[item] = 1;
+                        if (categoryList.Any(x => x.Key == item))
+                        {
+                            categoryList[item] += 1;
+                        }
+                        else
+                        {
+                            categoryList[item] = 1;
+                        }
                     }
                 }
                 result.PurposeCount = purposeList;
@@ -209,7 +214,7 @@ namespace Business.Concrete
                 user.LastName = organisationForRegisterDto.LastName;
 
                 _userService.Update(user);
-                var organisation = _organisationDal.Get(x=>x.UserId==user.Id);
+                var organisation = _organisationDal.Get(x => x.UserId == user.Id);
 
                 organisation.CityId = organisationForRegisterDto.CityId;
                 organisation.Phone = organisationForRegisterDto.Phone;
@@ -305,22 +310,23 @@ namespace Business.Concrete
         }
         public IDataResult<OrganisationProfileView> GetOrganisationProfileDetail(int organisationId)
         {
-            OrganisationProfileView result=null;
+            OrganisationProfileView result = null;
             var organisation = _organisationDal.GetOrganisationProfilDetail(organisationId);
-            
+
             if (organisation != null)
             {
-                result = new OrganisationProfileView() { 
-                FinanceDocument=organisation.FinanceDocument,
-                CityName=organisation.City.CityName,
-                Desc=organisation.Desc,
-                FoundationOfYear=organisation.FoundationOfYear,
-                Image=organisation.Image,
-                IsMemberAcikAcik=organisation.IsMemberAcikAcik,
-                NameSurname=organisation.User.FirstName+" "+organisation.User.LastName,
-                OrganisationId=organisation.OrganisationId,
-                OrganisationName=organisation.OrganisationName,
-                Phone=organisation.Phone
+                result = new OrganisationProfileView()
+                {
+                    FinanceDocument = organisation.FinanceDocument,
+                    CityName = organisation.City.CityName,
+                    Desc = organisation.Desc,
+                    FoundationOfYear = organisation.FoundationOfYear,
+                    Image = organisation.Image,
+                    IsMemberAcikAcik = organisation.IsMemberAcikAcik,
+                    NameSurname = organisation.User.FirstName + " " + organisation.User.LastName,
+                    OrganisationId = organisation.OrganisationId,
+                    OrganisationName = organisation.OrganisationName,
+                    Phone = organisation.Phone
                 };
             }
             return new SuccessDataResult<OrganisationProfileView>(result);

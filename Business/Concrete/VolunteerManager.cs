@@ -151,7 +151,7 @@ namespace Business.Concrete
             var advertisement = _advertisementDal.Get(x => x.AdvertisementId == advertisementVolunteerDto.AdvertisementId);
 
             if (advertisement == null || advertisement.AppStartDate > DateTime.Now || advertisement.AppEndDate < DateTime.Now)
-                return new ErrorResult(Messages.Error);
+                return new ErrorResult(Messages.EndDateError);
 
             if (_volunteerDal.IsAdvertisementEnroll(advertisementVolunteerDto.AdvertisementId)){
                 return new ErrorResult(Messages.ErrorEnroll);
@@ -175,15 +175,15 @@ namespace Business.Concrete
 
         public IResult ComplatedAdvertisement(VolunteerAdvertisementComplatedDto volunteerAdvertisementComplatedDto)
         {
-            var advertisementVolunter = _advertisementVolunteerDal.Get(x => x.Id == volunteerAdvertisementComplatedDto.AdvertisementVolunteerId); ;
+            var advertisementVolunter = _advertisementVolunteerDal.Get(x => x.AdvertisementId == volunteerAdvertisementComplatedDto.AdvertisementId&&x.VolunteerId==volunteerAdvertisementComplatedDto.VolunteerId); ;
             if (advertisementVolunter == null || volunteerAdvertisementComplatedDto.VolunteerId != advertisementVolunter.VolunteerId)
             {
                 return new ErrorResult(Messages.Error);
             }
-            if (volunteerAdvertisementComplatedDto.AdvertisementVolunteerId > 0 && volunteerAdvertisementComplatedDto.TotalWork > 0)
+            if (volunteerAdvertisementComplatedDto.AdvertisementId > 0 && volunteerAdvertisementComplatedDto.TotalWork > 0)
             {
                 VolunteerAdvertisementComplated volunteerAdvertisementComplated = new VolunteerAdvertisementComplated();
-                volunteerAdvertisementComplated.AdvertisementVolunteerId = volunteerAdvertisementComplatedDto.AdvertisementVolunteerId;
+                volunteerAdvertisementComplated.AdvertisementVolunteerId = advertisementVolunter.Id;
                 volunteerAdvertisementComplated.TotalWork = volunteerAdvertisementComplatedDto.TotalWork;
                 volunteerAdvertisementComplated.Status = true;
                 volunteerAdvertisementComplated.InsertDate = DateTime.Now;
@@ -250,6 +250,54 @@ namespace Business.Concrete
             }
             return new SuccessDataResult<List<AdvertisementListView>>(result);
 
+        }
+
+        public IDataResult<VolunteerDashboardModel> GeVolunteerDashboard(int volunteerId)
+        {
+            try
+            {
+                var volunteerDetail = _volunteerDal.GetVolunteerDashboard(volunteerId);
+                VolunteerDashboardModel result = new VolunteerDashboardModel();
+                result.TotalActiveProjectCount = volunteerDetail.AdvertisementVolunteers == null ? 0 : volunteerDetail.AdvertisementVolunteers.Where(x => !x.VolunteerAdvertisementComplateds.Any(y=>y.ConfirmationStatus == 1)&& x.Advertisement.EndDate>DateTime.Now).Count();
+                result.TotalComplatedCount = volunteerDetail.AdvertisementVolunteers == null ? 0 : volunteerDetail.AdvertisementVolunteers.Where(x => x.VolunteerAdvertisementComplateds.Any(y => y.ConfirmationStatus == 1)).Count();
+                result.TotalComplatedHours = volunteerDetail.AdvertisementVolunteers == null ? 0 : volunteerDetail.AdvertisementVolunteers.Sum(x => x.VolunteerAdvertisementComplateds.Where(y => y.ConfirmationStatus == 1).Sum(y=>y.TotalWork));
+                result.TotalOrganisationCount = volunteerDetail.AdvertisementVolunteers == null ? 0 : volunteerDetail.AdvertisementVolunteers.Select(x => x.Advertisement).Select(x => x.Organisation).Distinct().ToList().Count;
+                Dictionary<string, int> purposeList = new Dictionary<string, int>();
+                Dictionary<string, int> categoryList = new Dictionary<string, int>();
+
+                if (volunteerDetail.AdvertisementVolunteers != null)
+                {
+                    foreach (var item in volunteerDetail.AdvertisementVolunteers.Select(x=>x.Advertisement).Where(x => x.Status == true).SelectMany(x => x.AdvertisementPurposes.Select(y => y.Purpose.PurposeName)).ToList())
+                    {
+                        if (purposeList.Any(x => x.Key == item))
+                        {
+                            purposeList[item] += 1;
+                        }
+                        else
+                        {
+                            purposeList[item] = 1;
+                        }
+                    }
+                    foreach (var item in volunteerDetail.AdvertisementVolunteers.Select(x => x.Advertisement).Where(x => x.Status == true).SelectMany(x => x.AdvertisementCategorys.Select(y => y.Category.CategoryName)).ToList())
+                    {
+                        if (categoryList.Any(x => x.Key == item))
+                        {
+                            categoryList[item] += 1;
+                        }
+                        else
+                        {
+                            categoryList[item] = 1;
+                        }
+                    }
+                }
+                result.PurposeCount = purposeList;
+                result.CategoryCount = categoryList;
+                return new SuccessDataResult<VolunteerDashboardModel>(result);
+            }
+            catch (Exception hata)
+            {
+                return new ErrorDataResult<VolunteerDashboardModel>(null, Messages.Error);
+            }
         }
         public IResult UserExists(string email)
         {
