@@ -83,14 +83,14 @@ namespace DataAccess.Concrete.EntityFramework
                 }
                 else
                 {
-                    var query = context.Advertisements.Where(x => x.Status == false);
+                    var query = context.Advertisements.Where(x => 1==1);
 
                     if (filter.OrganisationName != null)
                         query = query.Where(x => x.Organisation.OrganisationName==filter.OrganisationName);
 
 
                     query = query.Include(x => x.Organisation);
-                    query = query.OrderByDescending(x => x.Status).ThenBy(x => x.StartDate);
+                    query = query.OrderBy(x => x.Status).ThenBy(x => x.StartDate);
                     if (paginationQuery != null)
                         query = query.Skip((paginationQuery.PageNumber - 1) * paginationQuery.PageSize).Take(paginationQuery.PageSize);
                     return query.ToList();

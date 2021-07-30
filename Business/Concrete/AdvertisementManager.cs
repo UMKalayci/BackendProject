@@ -21,8 +21,8 @@ namespace Business.Concrete
         private IAdvertisementPurposeDal _advertisementPurposeDal;
         private IVolunteerDal _volunteerDal;
         private ICommentDal _commentDal;
-        private IVolunteerAdvertisementComplatedDal volunteerAdvertisementComplatedDal;
-        public AdvertisementManager(IVolunteerAdvertisementComplatedDal _volunteerAdvertisementComplatedDal, ICommentDal commentDal, IPaginationUriService uriService, IVolunteerDal volunteerDal, IAdvertisementDal advertisementDal, IAdvertisementCategoryDal advertisementCategoryDal, IAdvertisementPurposeDal advertisementPurposeDal)
+        private IEmailHelper _emailHelper;
+        public AdvertisementManager(IEmailHelper emailHelper, ICommentDal commentDal, IPaginationUriService uriService, IVolunteerDal volunteerDal, IAdvertisementDal advertisementDal, IAdvertisementCategoryDal advertisementCategoryDal, IAdvertisementPurposeDal advertisementPurposeDal)
         {
             _uriService = uriService;
             _advertisementDal = advertisementDal;
@@ -30,7 +30,7 @@ namespace Business.Concrete
             _advertisementPurposeDal = advertisementPurposeDal;
             _volunteerDal = volunteerDal;
             _commentDal = commentDal;
-            _volunteerAdvertisementComplatedDal = volunteerAdvertisementComplatedDal;
+            _emailHelper = emailHelper;
         }
 
         public IDataResult<int> AddComment(CommentDto comment)
@@ -221,6 +221,11 @@ namespace Business.Concrete
                     advertisement.Status = true;
                     advertisement.UpdateDate = DateTime.Now;
                     _advertisementDal.Update(advertisement);
+                    var volunteerList = _volunteerDal.GetVolunteersList() ;
+                    foreach (var item in volunteerList)
+                    {
+                        _emailHelper.AdvertisementMail(item.User.Email, advertisement.AdvertisementTitle);
+                    }
                     return new SuccessResult(Messages.SuccessAdded);
                 }
                 catch

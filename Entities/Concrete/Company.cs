@@ -20,5 +20,6 @@ namespace Entities.Concrete
         public ICollection<CompanyDepartment> CompanyDepartments { get; set; }
         public ICollection<Volunteer> Volunteers { get; set; }
         public User User { get; set; }
+        public City City { get; set; }
     }
 }

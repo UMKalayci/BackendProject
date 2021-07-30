@@ -3,6 +3,9 @@ using Entities.Dtos;
 using Entities.QueryModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Linq;
+using System.Security.Claims;
 
 namespace WebAPI.Controllers
 {
@@ -19,10 +22,16 @@ namespace WebAPI.Controllers
         }
 
         [Authorize(Policy = "CompanyOnly")]
-        [HttpGet("GetList")]
-        public ActionResult GetList()
+        [HttpGet("GetVolunteerList")]
+        public ActionResult GetVolunteerList()
         {
-            var result = _companyService.GetList();
+            var userID = User.Claims.Where(a => a.Type == ClaimTypes.NameIdentifier).FirstOrDefault().Value;
+            var company = _companyService.GetCompany(Convert.ToInt32(userID));
+            if (company.Data == null)
+            {
+                return BadRequest("Şirket bulunumadı!");
+            }
+            var result = _companyService.GetCompanyVolunteerList(company.Data.CompanyId);
             if (result.Success)
             {
                 return Ok(result.Data);
@@ -31,7 +40,54 @@ namespace WebAPI.Controllers
             return BadRequest(result.Message);
         }
 
+        [Authorize]
+        [HttpGet("GetCompanyComboList")]
+        public ActionResult GetCompanyComboList()
+        {
+            var result = _companyService.GetComboList();
+            if (result.Success)
+            {
+                return Ok(result.Data);
+            }
 
+            return BadRequest(result.Message);
+        }
+        [Authorize(Policy = "CompanyOnly")]
+        [HttpGet("GetProfilDetail")]
+        public ActionResult GetProfilDetail()
+        {
+            var userID = User.Claims.Where(a => a.Type == ClaimTypes.NameIdentifier).FirstOrDefault().Value;
+            var company = _companyService.GetCompany(Convert.ToInt32(userID));
+            if (company.Data == null)
+            {
+                return BadRequest("Şirket bulunumadı!");
+            }
+            var result = _companyService.GetProfilDetail(company.Data.CompanyId);
+            if (result.Success)
+            {
+                return Ok(result.Data);
+            }
+
+            return BadRequest(result.Message);
+        }
+        [Authorize(Policy = "CompanyOnly")]
+        [HttpGet("GetDashboardDetail")]
+        public ActionResult GetDashboardDetail()
+        {
+            var userID = User.Claims.Where(a => a.Type == ClaimTypes.NameIdentifier).FirstOrDefault().Value;
+            var company = _companyService.GetCompany(Convert.ToInt32(userID));
+            if (company.Data == null)
+            {
+                return BadRequest("Şirket bulunumadı!");
+            }
+            var result = _companyService.GetCompanyDashboard(company.Data.CompanyId);
+            if (result.Success)
+            {
+                return Ok(result.Data);
+            }
+
+            return BadRequest(result.Message);
+        }
         [HttpPost("register")]
         public ActionResult Register(CompanyForRegisterDto companyForRegisterDto)
         {

@@ -146,5 +146,16 @@ namespace DataAccess.Concrete.EntityFramework
             }
         }
 
+        public List<Volunteer> GetVolunteersList()
+        {
+            using (var context = new EGonulluContext())
+            {
+                var query = context.Volunteers.Where(x=>1==1);
+                query = query.Include(x => x.User);
+                return query.ToList();
+            }
+        }
+
+
     }
 }

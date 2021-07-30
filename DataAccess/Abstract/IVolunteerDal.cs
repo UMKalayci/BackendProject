@@ -15,5 +15,6 @@ namespace DataAccess.Abstract
         int GetAdvertisementCount(AdvertisementQuery filter);
 
         Volunteer GetVolunterProfile(int userId);
+        List<Volunteer> GetVolunteersList();
     }
 }

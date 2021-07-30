@@ -12,8 +12,10 @@ namespace WebAPI.Controllers
     {
         private IOrganisationService _organisationService;
         private IAdvertisementService _advertisementService;
-        public AdminController(IOrganisationService organisationService, IAdvertisementService advertisementService)
+        private ICompanyService _companyService;
+        public AdminController(ICompanyService companyService,IOrganisationService organisationService, IAdvertisementService advertisementService)
         {
+            _companyService = companyService;
             _organisationService = organisationService;
             _advertisementService = advertisementService;
         }
@@ -39,6 +41,34 @@ namespace WebAPI.Controllers
             if (result.Success)
             {
                 return Ok(result.Data);
+            }
+
+            return BadRequest(result.Message);
+        }
+
+        [Authorize(Policy = "AdminOnly")]
+        [HttpGet("GetCompanyList")]
+        public ActionResult GetCompanyList([FromQuery] AdminCompanyApproveQuery advertisementQuery, [FromQuery] PaginationQuery paginationQuery)
+        {
+            var result = _companyService.GetApproveList(advertisementQuery, paginationQuery);
+            if (result.Success)
+            {
+                return Ok(result.Data);
+            }
+
+            return BadRequest(result.Message);
+        }
+
+
+
+        [Authorize(Policy = "AdminOnly")]
+        [HttpPost("ApproveCompany")]
+        public ActionResult ApproveCompany(CompanyApproveDto companyApproveDto)
+        {
+            var result = _companyService.ApproveCompany(companyApproveDto.CompanyId);
+            if (result.Success)
+            {
+                return Ok(result);
             }
 
             return BadRequest(result.Message);

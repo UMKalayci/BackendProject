@@ -88,7 +88,7 @@ namespace DataAccess.Concrete.EntityFramework
 
 
                     query = query.Include(x => x.City);
-                    query = query.OrderByDescending(x => x.Status).ThenBy(x => x.InsertDate);
+                    query = query.OrderBy(x => x.Status).ThenBy(x => x.InsertDate);
                     if (paginationQuery != null)
                         query = query.Skip((paginationQuery.PageNumber - 1) * paginationQuery.PageSize).Take(paginationQuery.PageSize);
                     return query.ToList();
