@@ -12,9 +12,7 @@ namespace DataAccess.Concrete.EntityFramework.Contexts
     {
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-
-            optionsBuilder.UseSqlServer(@"Server=tcp:egonulluserver.database.windows.net,1433;Initial Catalog=EGonulluDb;Persist Security Info=False;User ID=egonullu;Password=Arveles14701.;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;");
-            //optionsBuilder.UseSqlServer(@"Server=.\SQLEXPRESS;Database=EGonulluDb; Trusted_Connection=True;");
+            optionsBuilder.UseSqlServer(@"Server=.\SQLEXPRESS;Database=database; Trusted_Connection=True;");
         }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
